@@ -7,106 +7,147 @@
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📱</text></svg>">
 <style>
   :root{
-    --bg:#f6f7f9; --card:#fff; --ink:#1a1d21; --muted:#6b7280;
-    --line:#e3e6ea; --accent:#1a73e8; --accent-ink:#fff;
-    --code-bg:#f2f4f7; --ok:#0f9d58; --warn:#b06000; --bad:#d93025;
+    --bg:#f6f7f9; --card:#fff; --ink:#1a1d21; --muted:#6b7280; --faint:#9aa3ad;
+    --line:#e3e6ea; --accent:#1a73e8; --accent-ink:#fff; --chip:#eef1f5;
+    --code-bg:#f2f4f7; --ok:#0f9d58; --bad:#d93025;
+    --g:#1e8e3e; --y:#f9ab00; --o:#e8710a; --r:#d93025;
   }
   @media (prefers-color-scheme:dark){
     :root{
-      --bg:#14171a; --card:#1d2125; --ink:#e8eaed; --muted:#9aa0a6;
-      --line:#2f343a; --accent:#8ab4f8; --accent-ink:#14171a;
-      --code-bg:#111417; --ok:#81c995; --warn:#fdd663; --bad:#f28b82;
+      --bg:#14171a; --card:#1d2125; --ink:#e8eaed; --muted:#9aa0a6; --faint:#6b7280;
+      --line:#2f343a; --accent:#8ab4f8; --accent-ink:#14171a; --chip:#262b31;
+      --code-bg:#111417; --ok:#81c995; --bad:#f28b82;
+      --g:#81c995; --y:#fdd663; --o:#fcad70; --r:#f28b82;
     }
   }
   *{box-sizing:border-box}
   body{
     margin:0; min-height:100vh; background:var(--bg); color:var(--ink);
     font:16px/1.6 system-ui,-apple-system,"Segoe UI",Roboto,"Malgun Gothic",sans-serif;
-    display:grid; place-items:start center; padding:24px;
+    padding:20px 16px 60px;
   }
-  .card{
-    width:100%; max-width:600px; background:var(--card); border:1px solid var(--line);
-    border-radius:16px; padding:28px; box-shadow:0 1px 3px rgba(0,0,0,.06);
-  }
-  h1{margin:0 0 4px; font-size:20px; letter-spacing:-.01em}
-  h2{margin:0 0 12px; font-size:15px; letter-spacing:-.01em}
-  .sub{margin:0 0 24px; color:var(--muted); font-size:14px}
-  button{
-    font:inherit; border-radius:10px; border:1px solid var(--line);
-    padding:11px 18px; cursor:pointer; background:var(--card); color:var(--ink);
-  }
+  .wrap{max-width:920px; margin:0 auto}
+  header{display:flex; justify-content:space-between; align-items:baseline; gap:12px; margin-bottom:4px}
+  h1{margin:0; font-size:20px; letter-spacing:-.01em}
+  h2{margin:0 0 14px; font-size:16px; letter-spacing:-.01em}
+  .sub{margin:0 0 22px; color:var(--muted); font-size:13.5px}
+  button{font:inherit; border-radius:9px; border:1px solid var(--line); padding:8px 14px;
+         cursor:pointer; background:var(--card); color:var(--ink)}
   button:hover:not(:disabled){border-color:var(--muted)}
   button:disabled{opacity:.5; cursor:default}
   .primary{background:var(--accent); color:var(--accent-ink); border-color:transparent; font-weight:600}
   .row{display:flex; gap:8px; flex-wrap:wrap; align-items:center}
-  .between{justify-content:space-between}
-  .sec{border-top:1px solid var(--line); margin-top:24px; padding-top:22px}
-  code{
-    font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; font-size:12.5px;
-    background:var(--code-bg); border:1px solid var(--line); border-radius:7px;
-    padding:2px 6px; word-break:break-all;
-  }
-  table{border-collapse:collapse; width:100%; font-size:14px; margin-top:4px}
-  th,td{text-align:left; padding:7px 10px; border-bottom:1px solid var(--line)}
-  th{color:var(--muted); font-weight:500; font-size:12px; text-transform:uppercase; letter-spacing:.05em}
-  td.num{text-align:right; font-variant-numeric:tabular-nums}
+  .chip{background:var(--chip); border:none; padding:5px 12px; border-radius:999px; font-size:13px}
+  .chip[aria-pressed=true]{background:var(--accent); color:var(--accent-ink); font-weight:600}
+  .card{background:var(--card); border:1px solid var(--line); border-radius:14px; padding:18px 20px}
+  .lines{display:grid; gap:10px}
+  .lineCard{background:var(--card); border:1px solid var(--line); border-radius:14px;
+            padding:14px 16px; cursor:pointer; text-align:left; width:100%; display:block}
+  .lineCard:hover{border-color:var(--muted)}
+  .lineTop{display:flex; align-items:center; gap:9px; flex-wrap:wrap}
+  .dot{width:11px; height:11px; border-radius:50%; flex:none}
+  .g{background:var(--g)} .y{background:var(--y)} .o{background:var(--o)} .r{background:var(--r)}
+  .name{font-weight:600}
+  .meta{color:var(--muted); font-size:12.5px; margin-top:3px}
+  .badge{font-size:12px; padding:2px 9px; border-radius:999px; border:1px solid currentColor; font-weight:600}
+  .bg{color:var(--g)} .by{color:var(--y)} .bo{color:var(--o)} .br{color:var(--r)}
+  .grp{color:var(--muted); font-size:12px; text-transform:uppercase; letter-spacing:.06em;
+       margin:20px 0 8px; font-weight:600}
+  .kpis{display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:10px; margin-bottom:20px}
+  .kpi{background:var(--code-bg); border:1px solid var(--line); border-radius:11px; padding:12px 14px}
+  .kpiLabel{font-size:11.5px; color:var(--muted); text-transform:uppercase; letter-spacing:.05em}
+  .kpiVal{font-size:19px; font-weight:600; font-variant-numeric:tabular-nums; margin-top:2px}
+  .kpiSub{font-size:12px; color:var(--muted)}
+  .scroll{overflow-x:auto; -webkit-overflow-scrolling:touch}
+  table{border-collapse:collapse; width:100%; font-size:13.5px; white-space:nowrap}
+  th,td{padding:7px 10px; border-bottom:1px solid var(--line); text-align:right}
+  th:first-child,td:first-child{text-align:left; position:sticky; left:0; background:var(--card)}
+  th{color:var(--muted); font-weight:500; font-size:11.5px; text-transform:uppercase;
+     letter-spacing:.04em; white-space:nowrap}
+  td{font-variant-numeric:tabular-nums}
+  tr.past td{opacity:.45}
+  tr.peak td{border-bottom:2px solid var(--o)}
+  tr.now td{background:var(--chip)}
+  .ck{color:var(--ok); font-size:11px}
   .hide{display:none}
   .muted{color:var(--muted); font-size:13px}
-  .ok{color:var(--ok); font-weight:600}
-  .warn{color:var(--warn)}
   .bad{color:var(--bad)}
+  .ok{color:var(--ok)}
+  code{font-family:ui-monospace,Menlo,Consolas,monospace; font-size:12px;
+       background:var(--code-bg); border:1px solid var(--line); border-radius:6px; padding:1px 5px}
+  details{margin-top:26px; font-size:13.5px}
+  summary{cursor:pointer; color:var(--muted)}
   .note{background:var(--code-bg); border:1px solid var(--line); border-radius:10px;
-        padding:12px 14px; font-size:13.5px; margin:14px 0}
+        padding:11px 13px; font-size:13px; margin:12px 0}
 </style>
 </head>
 <body>
-<main class="card">
-  <h1>알뜰폰 혜택 트래커</h1>
+<div class="wrap">
+
+  <header>
+    <h1>알뜰폰 혜택 트래커</h1>
+    <span class="muted" id="today"></span>
+  </header>
   <p class="sub">회선별 혜택 확인과 해지 최적기 판단</p>
 
-  <section id="signedOut" class="hide">
+  <section id="signedOut" class="hide card">
     <button class="primary" id="btnIn">Google로 로그인</button>
-    <p class="muted" style="margin-top:14px">
-      본인 계정만 접근할 수 있습니다. 다른 계정으로는 데이터가 보이지 않습니다.
-    </p>
+    <p class="muted" style="margin-top:12px">본인 계정만 접근할 수 있습니다.</p>
   </section>
 
-  <section id="signedIn" class="hide">
-    <div class="row between">
+  <section id="app" class="hide">
+
+    <!-- 전체 현황 -->
+    <div id="viewList">
+      <div class="row" style="margin-bottom:4px">
+        <span class="muted" style="margin-right:4px">묶기</span>
+        <button class="chip" data-grp="none"    aria-pressed="true">없음</button>
+        <button class="chip" data-grp="carrier" aria-pressed="false">통신사</button>
+        <button class="chip" data-grp="owner"   aria-pressed="false">사용자</button>
+        <button class="chip" data-grp="start"   aria-pressed="false">가입년월</button>
+      </div>
+      <div id="listBody"></div>
+    </div>
+
+    <!-- 회선 상세 -->
+    <div id="viewDetail" class="hide">
+      <button id="btnBack" style="margin-bottom:14px">← 전체 현황</button>
+      <div id="detailBody"></div>
+    </div>
+
+    <details id="devtools">
+      <summary>개발자 도구 — 계산 검증 / 데이터 관리</summary>
+      <div class="card" style="margin-top:12px">
+        <h2>계산 검증</h2>
+        <p class="muted" style="margin-top:-8px">
+          앱이 Firestore에서 읽어 계산한 값을 변환 시점의 검증된 수치와 대조합니다.
+          시트 → JSON → Firestore → 화면 전 구간이 맞는지 확인하는 용도입니다.
+        </p>
+        <div class="scroll"><table>
+          <thead><tr><th>회선</th><th>maxNet</th><th>maxAvg</th><th>판정</th></tr></thead>
+          <tbody id="verifyBody"></tbody>
+        </table></div>
+
+        <h2 style="margin-top:24px">데이터 관리</h2>
+        <div class="row">
+          <button id="btnImport">JSON에서 다시 가져오기</button>
+          <span class="muted" id="importStatus"></span>
+        </div>
+        <div id="overwriteNote" class="note hide">
+          같은 ID를 <strong>덮어씁니다</strong> — 확인완료 표시나 수정한 값이
+          JSON 기준으로 되돌아갑니다. 진행하려면 한 번 더 누르세요.
+        </div>
+      </div>
+    </details>
+
+    <div class="row" style="margin-top:24px; justify-content:flex-end">
       <span class="muted" id="who"></span>
       <button id="btnOut">로그아웃</button>
     </div>
-
-    <div class="sec">
-      <h2>데이터 적재</h2>
-      <div id="status" class="muted">확인 중…</div>
-
-      <div class="row" style="margin-top:14px">
-        <button class="primary" id="btnImport" disabled>데이터 가져오기</button>
-        <button id="btnRefresh">현황 새로고침</button>
-      </div>
-
-      <div id="overwriteNote" class="note hide">
-        이미 데이터가 있습니다. 다시 가져오면 <strong>같은 ID를 덮어씁니다</strong> —
-        확인완료 표시나 직접 수정한 값이 JSON 기준으로 되돌아갑니다.
-        그래도 진행하려면 버튼을 한 번 더 누르세요.
-      </div>
-
-      <div id="result" class="hide" style="margin-top:16px">
-        <table>
-          <thead><tr><th>항목</th><th class="num">기대</th><th class="num">실제</th><th></th></tr></thead>
-          <tbody id="resultBody"></tbody>
-        </table>
-      </div>
-    </div>
-
-    <div class="sec">
-      <p class="muted">UID <code id="uid"></code></p>
-    </div>
   </section>
 
-  <p id="err" class="bad" style="margin:14px 0 0"></p>
-</main>
+  <p id="err" class="bad" style="margin-top:14px"></p>
+</div>
 
 <script src="firebase-config.js"></script>
 <script type="module">
@@ -116,121 +157,282 @@ import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChang
 import { getFirestore, collection, doc, getDocs, writeBatch }
   from "https://www.gstatic.com/firebasejs/11.0.2/firebase-firestore.js";
 
-const $ = (id) => document.getElementById(id);
-const app  = initializeApp(window.FIREBASE_CONFIG);
-const auth = getAuth(app);
-const db   = getFirestore(app);
+const $  = (id) => document.getElementById(id);
+const el = (t, c, h) => { const n = document.createElement(t); if (c) n.className = c;
+                          if (h != null) n.innerHTML = h; return n; };
+const app = initializeApp(window.FIREBASE_CONFIG);
+const auth = getAuth(app), db = getFirestore(app);
 const provider = new GoogleAuthProvider();
 
-const show = (el, on) => el.classList.toggle("hide", !on);
+const show = (n, on) => n.classList.toggle("hide", !on);
 const fail = (e) => { $("err").textContent = e?.message || String(e); console.error(e); };
+const won  = (n) => (n == null ? "" : Math.round(n).toLocaleString("ko-KR"));
 
-let expected = null;   // JSON 기준 기대 건수
-let armed = false;     // 덮어쓰기 2차 확인
+/* ---------- 현재월: 기기 시계 ---------- */
+const nowYm = () => { const d = new Date();
+  return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0"); };
+const TODAY = nowYm();
+const monthsApart = (a, b) => {
+  const [ay, am] = a.split("-").map(Number), [by, bm] = b.split("-").map(Number);
+  return (by - ay) * 12 + (bm - am);
+};
 
-/** 저장소의 JSON 원본 */
-async function loadSource() {
-  const res = await fetch("data/altteul_lines.json", { cache: "no-store" });
-  if (!res.ok) throw new Error("JSON 로드 실패 (" + res.status + ")");
-  return res.json();
-}
+/* ---------- 지표 ----------
+   netCum = Σ혜택 − Σ요금,  avgCum = netCum / max(M+, 1)
+   최대치는 계획값 전체 기준, 실적은 확인완료된 값만 (지침서 5장)      */
+function metrics(line) {
+  const ms = [...line.months].sort((a, b) => a.ym.localeCompare(b.ym));
+  let feeCum = 0, benCum = 0, maxNet = null, maxNetM = null, maxAvg = null, maxAvgM = null;
+  const rows = ms.map((m) => {
+    const ben = Object.values(m.values || {}).reduce((s, v) => s + (v || 0), 0);
+    feeCum += m.fee || 0; benCum += ben;
+    const net = benCum - feeCum, avg = net / Math.max(m.mPlus || 0, 1);
+    if (maxNet === null || net > maxNet) { maxNet = net; maxNetM = m.ym; }
+    if (maxAvg === null || avg > maxAvg) { maxAvg = avg; maxAvgM = m.ym; }
+    return { ...m, ben, net, avg };
+  });
 
-/** Firestore 실제 건수 — 회선 수와 월 문서 총합 */
-async function countStored() {
-  const lines = await getDocs(collection(db, "lines"));
-  let months = 0;
-  for (const d of lines.docs) {
-    months += (await getDocs(collection(db, "lines", d.id, "months"))).size;
+  // 실적 — 현재월까지, 확인완료된 것만
+  let aFee = 0, aBen = 0, aMp = 0;
+  for (const m of ms) {
+    if (m.ym > TODAY) break;
+    const ck = m.checked || {};
+    if (ck.fee) aFee += m.fee || 0;
+    for (const [k, v] of Object.entries(m.values || {})) if (ck[k]) aBen += v || 0;
+    aMp = m.mPlus || 0;
   }
-  return { lines: lines.size, months };
+  const actualNet = aBen - aFee;
+
+  let sig = "g";
+  if (maxNetM && TODAY >= maxNetM) sig = "r";
+  else if (maxAvgM && TODAY >= maxAvgM) sig = "o";
+  else if (maxAvgM && monthsApart(TODAY, maxAvgM) <= 1) sig = "y";
+
+  return { rows, maxNet, maxNetM, maxAvg, maxAvgM, sig,
+           actualNet, actualAvg: actualNet / Math.max(aMp, 1) };
 }
 
-/** months 는 하위 컬렉션으로 분리해 기록 */
-async function importAll(src) {
-  const batch = writeBatch(db);
-  for (const L of src) {
-    const { months, ...meta } = L;
-    batch.set(doc(db, "lines", L.id), meta);
-    for (const m of months) batch.set(doc(db, "lines", L.id, "months", m.ym), m);
+const SIG = { g:["유지","bg"], y:["준비","by"], o:["해지검토","bo"], r:["유지할수록 손해","br"] };
+
+/* ---------- 로드 ---------- */
+let LINES = [], GROUP = "none";
+
+async function loadAll() {
+  const snap = await getDocs(collection(db, "lines"));
+  const out = [];
+  for (const d of snap.docs) {
+    const months = (await getDocs(collection(db, "lines", d.id, "months")))
+      .docs.map((x) => x.data());
+    out.push({ ...d.data(), id: d.id, months });
   }
-  await batch.commit();
+  out.sort((a, b) => (a.order ?? 99) - (b.order ?? 99) || a.id.localeCompare(b.id));
+  return out;
 }
 
-function renderResult(actual) {
-  const rows = [
-    ["회선", expected.lines,  actual.lines],
-    ["월 기록", expected.months, actual.months],
-  ];
-  $("resultBody").innerHTML = rows.map(([k, e, a]) =>
-    `<tr><td>${k}</td><td class="num">${e}</td><td class="num">${a}</td>
-     <td class="${a === e ? "ok" : "bad"}">${a === e ? "일치" : "불일치"}</td></tr>`
-  ).join("");
-  show($("result"), true);
+/* ---------- 전체 현황 ---------- */
+function lineCard(L) {
+  const m = L._m, [label, cls] = SIG[m.sig];
+  const to = m.sig === "r" ? null
+           : m.sig === "o" ? monthsApart(TODAY, m.maxNetM)
+           : monthsApart(TODAY, m.maxAvgM);
+  const tail = m.sig === "r" ? "최대 실이득 시점 지남"
+             : m.sig === "o" ? `빨강까지 ${to}개월`
+             : `해지검토까지 ${to}개월`;
+  const b = el("button", "lineCard");
+  b.innerHTML =
+    `<div class="lineTop">
+       <span class="dot ${m.sig}"></span>
+       <span class="name">${L.shortLabel || L.id}</span>
+       <span class="badge ${cls}">${label}</span>
+     </div>
+     <div class="meta">${L.label || ""}</div>
+     <div class="meta">${L.planName || ""} · ${tail}</div>
+     <div class="meta">최대 실이득 <strong>${won(m.maxNet)}</strong> @${m.maxNetM}
+        · 최대 월평균 <strong>${won(m.maxAvg)}</strong> @${m.maxAvgM}</div>`;
+  b.onclick = () => openDetail(L.id);
+  return b;
 }
 
-async function refresh() {
-  $("err").textContent = "";
-  $("btnRefresh").disabled = true;
+const GROUPERS = {
+  none:    () => null,
+  carrier: (L) => L.carrier || "(미지정)",
+  owner:   (L) => L.owner || "(미지정)",
+  start:   (L) => L.startMonth || "(미지정)",
+};
+
+function renderList() {
+  const body = $("listBody"); body.innerHTML = "";
+  const order = { r:0, o:1, y:2, g:3 };
+  const sorted = [...LINES].sort((a, b) => order[a._m.sig] - order[b._m.sig]);
+  const key = GROUPERS[GROUP];
+
+  if (GROUP === "none") {
+    const box = el("div", "lines");
+    sorted.forEach((L) => box.append(lineCard(L)));
+    body.append(box);
+    return;
+  }
+  const groups = new Map();
+  for (const L of sorted) {
+    const k = key(L);
+    if (!groups.has(k)) groups.set(k, []);
+    groups.get(k).push(L);
+  }
+  for (const [k, arr] of [...groups].sort((a, b) => String(a[0]).localeCompare(String(b[0])))) {
+    body.append(el("div", "grp", `${k} · ${arr.length}개`));
+    const box = el("div", "lines");
+    arr.forEach((L) => box.append(lineCard(L)));
+    body.append(box);
+  }
+}
+
+/* ---------- 회선 상세 ---------- */
+function renderDetail(L) {
+  const m = L._m, [label, cls] = SIG[m.sig];
+  const bens = L.benefits || [];
+  const d = $("detailBody"); d.innerHTML = "";
+
+  d.append(el("div", "", `
+    <div class="lineTop" style="margin-bottom:2px">
+      <span class="dot ${m.sig}"></span>
+      <h1 style="font-size:18px;margin:0">${L.shortLabel || L.id}</h1>
+      <span class="badge ${cls}">${label}</span>
+    </div>
+    <p class="meta">${L.label || ""}</p>
+    <p class="meta">${L.planName || ""} · ${L.role || ""} · 납부 ${
+      L.payment?.method || "?"}${L.payment?.dayHint ? `(${L.payment.dayHint})` : ""}${
+      L.payment?.note ? ` · ${L.payment.note}` : ""}</p>`));
+
+  d.append(el("div", "kpis", `
+    <div class="kpi"><div class="kpiLabel">최대 실이득</div>
+      <div class="kpiVal">${won(m.maxNet)}</div><div class="kpiSub">${m.maxNetM}</div></div>
+    <div class="kpi"><div class="kpiLabel">최대 월평균</div>
+      <div class="kpiVal">${won(m.maxAvg)}</div><div class="kpiSub">${m.maxAvgM} · 해지 최적기</div></div>
+    <div class="kpi"><div class="kpiLabel">누적 실적</div>
+      <div class="kpiVal">${won(m.actualNet)}</div><div class="kpiSub">${TODAY}까지 확인완료분</div></div>
+    <div class="kpi"><div class="kpiLabel">누적 월평균</div>
+      <div class="kpiVal">${won(m.actualAvg)}</div><div class="kpiSub">확인완료 기준</div></div>`));
+
+  const head = `<tr><th>년월</th><th>M+</th><th>요금제</th>` +
+    bens.map((b) => `<th>${b.label}<br><span style="font-weight:400">${b.rawDay || "-"}</span></th>`).join("") +
+    `<th>실이득</th><th>월평균</th><th>비고</th></tr>`;
+
+  const body = m.rows.map((r) => {
+    const past = m.maxAvgM && r.ym > m.maxAvgM;
+    const ck = r.checked || {};
+    const cells = bens.map((b) => {
+      const v = r.values?.[b.key];
+      return `<td>${v == null ? "·" : won(v)}${ck[b.key] ? ' <span class="ck">✓</span>' : ""}</td>`;
+    }).join("");
+    const klass = [past ? "past" : "", r.ym === m.maxAvgM ? "peak" : "", r.ym === TODAY ? "now" : ""]
+      .filter(Boolean).join(" ");
+    return `<tr class="${klass}"><td>${r.ym}</td><td>${r.mPlus ?? ""}</td>` +
+      `<td>${won(r.fee)}${ck.fee ? ' <span class="ck">✓</span>' : ""}</td>` +
+      cells + `<td>${won(r.net)}</td><td>${won(r.avg)}</td>` +
+      `<td style="text-align:left;white-space:normal">${r.note || ""}</td></tr>`;
+  }).join("");
+
+  d.append(el("div", "card", `<div class="scroll"><table><thead>${head}</thead><tbody>${body}</tbody></table></div>
+    <p class="muted" style="margin:12px 0 0">
+      주황 선이 <strong>최대 월평균 시점</strong>입니다. 그 아래(흐린 행)는 유지할수록 월평균이 떨어집니다.
+      <span class="ck">✓</span>는 확인완료된 값입니다.</p>`));
+
+  const extras = [];
+  if (L.contacts?.length) extras.push(`<h2>연락처</h2>` +
+    L.contacts.map((c) => `<p class="muted"><code>${c.phone}</code> ${c.note || ""}</p>`).join(""));
+  if (L.cautions?.length) extras.push(`<h2>주의사항</h2>` +
+    L.cautions.map((c) => `<p class="muted">${c}</p>`).join(""));
+  const bnotes = bens.filter((b) => b.note);
+  if (bnotes.length) extras.push(`<h2>혜택 메모</h2>` +
+    bnotes.map((b) => `<p class="muted"><strong>${b.label}</strong> — ${b.note}</p>`).join(""));
+  if (extras.length) d.append(el("div", "card", extras.join("")));
+}
+
+function openDetail(id) {
+  renderDetail(LINES.find((L) => L.id === id));
+  show($("viewList"), false); show($("viewDetail"), true);
+  window.scrollTo(0, 0);
+}
+
+/* ---------- 검증 ---------- */
+const EXPECTED = {
+  "본인 · KTM": [390620, "2027-05", 36860, "2027-01"],
+  "본인 · 유플": [202730, "2026-12", 53165, "2026-08"],
+  "본인 · 헬모": [177570, "2027-03", 31254, "2026-12"],
+  "Li · 유플": [176380, "2027-05", 40380, "2026-07"],
+  "Sj · 유플": [243330, "2027-03", 35272, "2027-02"],
+};
+function renderVerify() {
+  $("verifyBody").innerHTML = LINES.map((L) => {
+    const m = L._m, e = EXPECTED[L.id];
+    if (!e) return `<tr><td>${L.shortLabel}</td><td colspan="3" class="muted">기준값 없음</td></tr>`;
+    const okN = Math.round(m.maxNet) === e[0] && m.maxNetM === e[1];
+    const okA = Math.round(m.maxAvg) === e[2] && m.maxAvgM === e[3];
+    const good = okN && okA;
+    return `<tr><td>${L.shortLabel}</td>
+      <td>${won(m.maxNet)} @${m.maxNetM}</td>
+      <td>${won(m.maxAvg)} @${m.maxAvgM}</td>
+      <td class="${good ? "ok" : "bad"}">${good ? "일치" : "불일치"}</td></tr>`;
+  }).join("");
+  window.__verify = LINES.map((L) => {
+    const m = L._m, e = EXPECTED[L.id] || [];
+    return { id: L.id,
+             net: Math.round(m.maxNet) === e[0] && m.maxNetM === e[1],
+             avg: Math.round(m.maxAvg) === e[2] && m.maxAvgM === e[3] };
+  });
+}
+
+/* ---------- 다시 가져오기 ---------- */
+let armed = false;
+$("btnImport").onclick = async () => {
   try {
-    if (!expected) {
-      const src = await loadSource();
-      expected = { lines: src.length, months: src.reduce((n, L) => n + L.months.length, 0) };
+    if (!armed) { armed = true; show($("overwriteNote"), true);
+                  $("btnImport").textContent = "덮어쓰기 진행"; return; }
+    $("btnImport").disabled = true; $("importStatus").textContent = "기록 중…";
+    const src = await (await fetch("data/altteul_lines.json", { cache: "no-store" })).json();
+    const batch = writeBatch(db);
+    for (const L of src) {
+      const { months, ...meta } = L;
+      batch.set(doc(db, "lines", L.id), meta);
+      for (const m of months) batch.set(doc(db, "lines", L.id, "months", m.ym), m);
     }
-    const actual = await countStored();
-    const empty = actual.lines === 0 && actual.months === 0;
-    armed = false;
-    show($("overwriteNote"), false);
-    $("btnImport").disabled = false;
-    $("btnImport").textContent = empty ? "데이터 가져오기" : "다시 가져오기";
-    $("status").innerHTML = empty
-      ? `Firestore가 비어 있습니다. JSON에는 회선 <strong>${expected.lines}</strong>개,
-         월 기록 <strong>${expected.months}</strong>건이 있습니다.`
-      : `현재 회선 <strong>${actual.lines}</strong>개, 월 기록 <strong>${actual.months}</strong>건이 저장돼 있습니다.`;
-    if (!empty) renderResult(actual);
-  } catch (e) { fail(e); $("status").textContent = "현황을 읽지 못했습니다."; }
-  $("btnRefresh").disabled = false;
-}
-
-async function runImport() {
-  $("err").textContent = "";
-  try {
-    const actual = await countStored();
-    if ((actual.lines || actual.months) && !armed) {
-      armed = true;
-      show($("overwriteNote"), true);
-      $("btnImport").textContent = "덮어쓰기 진행";
-      return;
-    }
-    $("btnImport").disabled = true;
-    $("status").textContent = "기록 중…";
-    await importAll(await loadSource());
-    const after = await countStored();
-    renderResult(after);
-    const good = after.lines === expected.lines && after.months === expected.months;
-    $("status").innerHTML = good
-      ? `<span class="ok">적재 완료</span> — 기대 건수와 일치합니다.`
-      : `<span class="bad">건수가 맞지 않습니다.</span> 아래 표를 확인하세요.`;
-    armed = false;
-    show($("overwriteNote"), false);
-    $("btnImport").textContent = "다시 가져오기";
-  } catch (e) { fail(e); $("status").textContent = "적재에 실패했습니다."; }
+    await batch.commit();
+    $("importStatus").textContent = "완료";
+    armed = false; show($("overwriteNote"), false);
+    $("btnImport").textContent = "JSON에서 다시 가져오기";
+    await boot();
+  } catch (e) { fail(e); $("importStatus").textContent = "실패"; }
   $("btnImport").disabled = false;
+};
+
+/* ---------- 부팅 ---------- */
+async function boot() {
+  LINES = await loadAll();
+  LINES.forEach((L) => { L._m = metrics(L); });
+  renderList(); renderVerify();
+  window.__ready = true;
 }
 
-onAuthStateChanged(auth, (user) => {
+$("today").textContent = "기준 " + TODAY;
+onAuthStateChanged(auth, async (user) => {
   $("err").textContent = "";
-  show($("signedIn"), !!user);
-  show($("signedOut"), !user);
+  show($("app"), !!user); show($("signedOut"), !user);
   if (!user) return;
   $("who").textContent = user.email || "";
-  $("uid").textContent = user.uid;
-  refresh();
+  try { await boot(); } catch (e) { fail(e); }
 });
 
-$("btnIn").onclick      = () => signInWithPopup(auth, provider).catch(fail);
-$("btnOut").onclick     = () => signOut(auth).catch(fail);
-$("btnRefresh").onclick = refresh;
-$("btnImport").onclick  = runImport;
+$("btnIn").onclick  = () => signInWithPopup(auth, provider).catch(fail);
+$("btnOut").onclick = () => signOut(auth).catch(fail);
+$("btnBack").onclick = () => { show($("viewDetail"), false); show($("viewList"), true); };
+document.querySelectorAll("[data-grp]").forEach((b) => {
+  b.onclick = () => {
+    GROUP = b.dataset.grp;
+    document.querySelectorAll("[data-grp]").forEach((x) =>
+      x.setAttribute("aria-pressed", String(x === b)));
+    renderList();
+  };
+});
 </script>
 </body>
 </html>
