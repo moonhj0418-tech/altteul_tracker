@@ -7,30 +7,28 @@
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📱</text></svg>">
 <style>
   :root{
-    --bg:#f6f7f9; --card:#fff; --ink:#1a1d21; --muted:#6b7280; --faint:#9aa3ad;
+    --bg:#f6f7f9; --card:#fff; --ink:#1a1d21; --muted:#6b7280;
     --line:#e3e6ea; --accent:#1a73e8; --accent-ink:#fff; --chip:#eef1f5;
     --code-bg:#f2f4f7; --ok:#0f9d58; --bad:#d93025;
     --g:#1e8e3e; --y:#f9ab00; --o:#e8710a; --r:#d93025;
   }
   @media (prefers-color-scheme:dark){
     :root{
-      --bg:#14171a; --card:#1d2125; --ink:#e8eaed; --muted:#9aa0a6; --faint:#6b7280;
+      --bg:#14171a; --card:#1d2125; --ink:#e8eaed; --muted:#9aa0a6;
       --line:#2f343a; --accent:#8ab4f8; --accent-ink:#14171a; --chip:#262b31;
       --code-bg:#111417; --ok:#81c995; --bad:#f28b82;
       --g:#81c995; --y:#fdd663; --o:#fcad70; --r:#f28b82;
     }
   }
   *{box-sizing:border-box}
-  body{
-    margin:0; min-height:100vh; background:var(--bg); color:var(--ink);
-    font:16px/1.6 system-ui,-apple-system,"Segoe UI",Roboto,"Malgun Gothic",sans-serif;
-    padding:20px 16px 60px;
-  }
+  body{margin:0; min-height:100vh; background:var(--bg); color:var(--ink);
+       font:16px/1.6 system-ui,-apple-system,"Segoe UI",Roboto,"Malgun Gothic",sans-serif;
+       padding:20px 16px 60px}
   .wrap{max-width:920px; margin:0 auto}
-  header{display:flex; justify-content:space-between; align-items:baseline; gap:12px; margin-bottom:4px}
+  header{display:flex; justify-content:space-between; align-items:baseline; gap:12px}
   h1{margin:0; font-size:20px; letter-spacing:-.01em}
-  h2{margin:0 0 14px; font-size:16px; letter-spacing:-.01em}
-  .sub{margin:0 0 22px; color:var(--muted); font-size:13.5px}
+  h2{margin:0 0 12px; font-size:16px; letter-spacing:-.01em}
+  .sub{margin:0 0 18px; color:var(--muted); font-size:13.5px}
   button{font:inherit; border-radius:9px; border:1px solid var(--line); padding:8px 14px;
          cursor:pointer; background:var(--card); color:var(--ink)}
   button:hover:not(:disabled){border-color:var(--muted)}
@@ -39,6 +37,10 @@
   .row{display:flex; gap:8px; flex-wrap:wrap; align-items:center}
   .chip{background:var(--chip); border:none; padding:5px 12px; border-radius:999px; font-size:13px}
   .chip[aria-pressed=true]{background:var(--accent); color:var(--accent-ink); font-weight:600}
+  .tabs{display:flex; gap:6px; border-bottom:1px solid var(--line); margin-bottom:18px}
+  .tab{background:none; border:none; border-bottom:2px solid transparent; border-radius:0;
+       padding:9px 4px; margin-right:14px; color:var(--muted)}
+  .tab[aria-selected=true]{color:var(--ink); border-bottom-color:var(--accent); font-weight:600}
   .card{background:var(--card); border:1px solid var(--line); border-radius:14px; padding:18px 20px}
   .lines{display:grid; gap:10px}
   .lineCard{background:var(--card); border:1px solid var(--line); border-radius:14px;
@@ -53,7 +55,7 @@
   .bg{color:var(--g)} .by{color:var(--y)} .bo{color:var(--o)} .br{color:var(--r)}
   .grp{color:var(--muted); font-size:12px; text-transform:uppercase; letter-spacing:.06em;
        margin:20px 0 8px; font-weight:600}
-  .kpis{display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:10px; margin-bottom:20px}
+  .kpis{display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:10px; margin-bottom:8px}
   .kpi{background:var(--code-bg); border:1px solid var(--line); border-radius:11px; padding:12px 14px}
   .kpiLabel{font-size:11.5px; color:var(--muted); text-transform:uppercase; letter-spacing:.05em}
   .kpiVal{font-size:19px; font-weight:600; font-variant-numeric:tabular-nums; margin-top:2px}
@@ -63,16 +65,36 @@
   th,td{padding:7px 10px; border-bottom:1px solid var(--line); text-align:right}
   th:first-child,td:first-child{text-align:left; position:sticky; left:0; background:var(--card)}
   th{color:var(--muted); font-weight:500; font-size:11.5px; text-transform:uppercase;
-     letter-spacing:.04em; white-space:nowrap}
+     letter-spacing:.04em}
   td{font-variant-numeric:tabular-nums}
+  td.cell{cursor:pointer}
+  td.cell:hover{background:var(--chip)}
   tr.past td{opacity:.45}
   tr.peak td{border-bottom:2px solid var(--o)}
   tr.now td{background:var(--chip)}
   .ck{color:var(--ok); font-size:11px}
+  /* 할 일 */
+  .todo{display:grid; gap:8px}
+  .item{display:flex; align-items:center; gap:12px; background:var(--card);
+        border:1px solid var(--line); border-radius:12px; padding:11px 14px}
+  .day{min-width:62px; font-weight:600; font-variant-numeric:tabular-nums; font-size:13.5px}
+  .itemMain{flex:1; min-width:0}
+  .itemTitle{font-size:14.5px}
+  .itemSub{color:var(--muted); font-size:12.5px}
+  .amt{font-variant-numeric:tabular-nums; font-size:13.5px; color:var(--muted)}
+  .alert{border-left:3px solid var(--o); padding-left:12px; margin:4px 0 14px; font-size:13.5px}
+  /* 모달 */
+  .mask{position:fixed; inset:0; background:rgba(0,0,0,.45); display:grid; place-items:center;
+        padding:20px; z-index:20}
+  .modal{background:var(--card); border-radius:14px; padding:22px; width:100%; max-width:380px}
+  input[type=number],input[type=text]{font:inherit; width:100%; padding:9px 11px; border-radius:9px;
+    border:1px solid var(--line); background:var(--bg); color:var(--ink)}
+  label.ckline{display:flex; gap:9px; align-items:center; margin:14px 0; cursor:pointer}
+  input[type=checkbox]{width:18px; height:18px; accent-color:var(--accent)}
   .hide{display:none}
   .muted{color:var(--muted); font-size:13px}
-  .bad{color:var(--bad)}
-  .ok{color:var(--ok)}
+  .bad{color:var(--bad)} .ok{color:var(--ok)}
+  .foot{font-size:12.5px; color:var(--muted); margin:10px 0 20px; line-height:1.55}
   code{font-family:ui-monospace,Menlo,Consolas,monospace; font-size:12px;
        background:var(--code-bg); border:1px solid var(--line); border-radius:6px; padding:1px 5px}
   details{margin-top:26px; font-size:13.5px}
@@ -96,9 +118,19 @@
   </section>
 
   <section id="app" class="hide">
+    <div class="tabs" id="tabs">
+      <button class="tab" data-view="todo" aria-selected="true">이번 달 할 일</button>
+      <button class="tab" data-view="list" aria-selected="false">전체 현황</button>
+    </div>
+
+    <!-- 이번 달 할 일 -->
+    <div id="viewTodo">
+      <div id="todoAlerts"></div>
+      <div id="todoBody"></div>
+    </div>
 
     <!-- 전체 현황 -->
-    <div id="viewList">
+    <div id="viewList" class="hide">
       <div class="row" style="margin-bottom:4px">
         <span class="muted" style="margin-right:4px">묶기</span>
         <button class="chip" data-grp="none"    aria-pressed="true">없음</button>
@@ -111,7 +143,7 @@
 
     <!-- 회선 상세 -->
     <div id="viewDetail" class="hide">
-      <button id="btnBack" style="margin-bottom:14px">← 전체 현황</button>
+      <button id="btnBack" style="margin-bottom:14px">← 뒤로</button>
       <div id="detailBody"></div>
     </div>
 
@@ -120,14 +152,12 @@
       <div class="card" style="margin-top:12px">
         <h2>계산 검증</h2>
         <p class="muted" style="margin-top:-8px">
-          앱이 Firestore에서 읽어 계산한 값을 변환 시점의 검증된 수치와 대조합니다.
-          시트 → JSON → Firestore → 화면 전 구간이 맞는지 확인하는 용도입니다.
-        </p>
+          앱이 Firestore에서 읽어 계산한 값을 변환 시점의 확정 수치와 대조합니다.
+          시트 → JSON → Firestore → 화면 전 구간 점검용입니다.</p>
         <div class="scroll"><table>
           <thead><tr><th>회선</th><th>maxNet</th><th>maxAvg</th><th>판정</th></tr></thead>
           <tbody id="verifyBody"></tbody>
         </table></div>
-
         <h2 style="margin-top:24px">데이터 관리</h2>
         <div class="row">
           <button id="btnImport">JSON에서 다시 가져오기</button>
@@ -135,8 +165,7 @@
         </div>
         <div id="overwriteNote" class="note hide">
           같은 ID를 <strong>덮어씁니다</strong> — 확인완료 표시나 수정한 값이
-          JSON 기준으로 되돌아갑니다. 진행하려면 한 번 더 누르세요.
-        </div>
+          JSON 기준으로 되돌아갑니다. 진행하려면 한 번 더 누르세요.</div>
       </div>
     </details>
 
@@ -149,161 +178,223 @@
   <p id="err" class="bad" style="margin-top:14px"></p>
 </div>
 
+<!-- 값 편집 모달 -->
+<div id="mask" class="mask hide">
+  <div class="modal">
+    <h2 id="mTitle"></h2>
+    <p class="muted" id="mSub" style="margin:-6px 0 14px"></p>
+    <label class="muted" for="mVal">금액</label>
+    <input type="number" id="mVal" step="10">
+    <label class="ckline"><input type="checkbox" id="mCk"><span>확인완료</span></label>
+    <div class="row" style="justify-content:flex-end">
+      <button id="mCancel">취소</button>
+      <button class="primary" id="mSave">저장</button>
+    </div>
+    <p id="mErr" class="bad" style="margin:10px 0 0; font-size:13px"></p>
+  </div>
+</div>
+
 <script src="firebase-config.js"></script>
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-app.js";
 import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged }
   from "https://www.gstatic.com/firebasejs/11.0.2/firebase-auth.js";
-import { getFirestore, collection, doc, getDocs, writeBatch }
+import { getFirestore, collection, doc, getDocs, updateDoc, writeBatch }
   from "https://www.gstatic.com/firebasejs/11.0.2/firebase-firestore.js";
 
 const $  = (id) => document.getElementById(id);
-const el = (t, c, h) => { const n = document.createElement(t); if (c) n.className = c;
-                          if (h != null) n.innerHTML = h; return n; };
+const el = (t,c,h) => { const n=document.createElement(t); if(c) n.className=c;
+                        if(h!=null) n.innerHTML=h; return n; };
 const app = initializeApp(window.FIREBASE_CONFIG);
 const auth = getAuth(app), db = getFirestore(app);
 const provider = new GoogleAuthProvider();
 
-const show = (n, on) => n.classList.toggle("hide", !on);
+const show = (n,on) => n.classList.toggle("hide", !on);
 const fail = (e) => { $("err").textContent = e?.message || String(e); console.error(e); };
-const won  = (n) => (n == null ? "" : Math.round(n).toLocaleString("ko-KR"));
+const won  = (n) => (n==null ? "" : Math.round(n).toLocaleString("ko-KR"));
 
 /* ---------- 현재월: 기기 시계 ---------- */
-const nowYm = () => { const d = new Date();
-  return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0"); };
-const TODAY = nowYm();
-const monthsApart = (a, b) => {
-  const [ay, am] = a.split("-").map(Number), [by, bm] = b.split("-").map(Number);
-  return (by - ay) * 12 + (bm - am);
+const ymOf = (d) => d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0");
+const TODAY = ymOf(new Date());
+const prevYm = (ym) => { const [y,m]=ym.split("-").map(Number);
+  return m===1 ? `${y-1}-12` : `${y}-${String(m-1).padStart(2,"0")}`; };
+const monthsApart = (a,b) => { const [ay,am]=a.split("-").map(Number), [by,bm]=b.split("-").map(Number);
+  return (by-ay)*12 + (bm-am); };
+/** '9~10일' → 9, '20일경' → 20, '월말' → 31 */
+const dayHintNum = (s) => {
+  if(!s) return null;
+  const m = String(s).match(/(\d+)\s*일/); if(m) return +m[1];
+  if(/월말/.test(s)) return 31; if(/월초/.test(s)) return 1; if(/중순/.test(s)) return 15;
+  return null;
 };
 
-/* ---------- 지표 ----------
-   netCum = Σ혜택 − Σ요금,  avgCum = netCum / max(M+, 1)
-   최대치는 계획값 전체 기준, 실적은 확인완료된 값만 (지침서 5장)      */
-function metrics(line) {
-  const ms = [...line.months].sort((a, b) => a.ym.localeCompare(b.ym));
-  let feeCum = 0, benCum = 0, maxNet = null, maxNetM = null, maxAvg = null, maxAvgM = null;
-  const rows = ms.map((m) => {
-    const ben = Object.values(m.values || {}).reduce((s, v) => s + (v || 0), 0);
-    feeCum += m.fee || 0; benCum += ben;
-    const net = benCum - feeCum, avg = net / Math.max(m.mPlus || 0, 1);
-    if (maxNet === null || net > maxNet) { maxNet = net; maxNetM = m.ym; }
-    if (maxAvg === null || avg > maxAvg) { maxAvg = avg; maxAvgM = m.ym; }
-    return { ...m, ben, net, avg };
+/* ---------- 지표 (지침서 5장) ---------- */
+function metrics(line){
+  const ms=[...line.months].sort((a,b)=>a.ym.localeCompare(b.ym));
+  let feeCum=0,benCum=0,maxNet=null,maxNetM=null,maxAvg=null,maxAvgM=null;
+  const rows=ms.map((m)=>{
+    const ben=Object.values(m.values||{}).reduce((s,v)=>s+(v||0),0);
+    feeCum+=m.fee||0; benCum+=ben;
+    const net=benCum-feeCum, avg=net/Math.max(m.mPlus||0,1);
+    if(maxNet===null||net>maxNet){maxNet=net;maxNetM=m.ym;}
+    if(maxAvg===null||avg>maxAvg){maxAvg=avg;maxAvgM=m.ym;}
+    return {...m,ben,net,avg};
   });
-
-  // 실적 — 현재월까지, 확인완료된 것만
-  let aFee = 0, aBen = 0, aMp = 0;
-  for (const m of ms) {
-    if (m.ym > TODAY) break;
-    const ck = m.checked || {};
-    if (ck.fee) aFee += m.fee || 0;
-    for (const [k, v] of Object.entries(m.values || {})) if (ck[k]) aBen += v || 0;
-    aMp = m.mPlus || 0;
+  // 실적 — 현재월까지, 확인완료된 값만
+  let aFee=0,aBen=0,aMp=0,pendingFee=0;
+  for(const m of ms){
+    if(m.ym>TODAY) break;
+    const ck=m.checked||{};
+    if(ck.fee) aFee+=m.fee||0; else pendingFee+=m.fee||0;
+    for(const [k,v] of Object.entries(m.values||{})) if(ck[k]) aBen+=v||0;
+    aMp=m.mPlus||0;
   }
-  const actualNet = aBen - aFee;
+  const actualNet=aBen-aFee;
+  let sig="g";
+  if(maxNetM&&TODAY>=maxNetM) sig="r";
+  else if(maxAvgM&&TODAY>=maxAvgM) sig="o";
+  else if(maxAvgM&&monthsApart(TODAY,maxAvgM)<=1) sig="y";
+  return {rows,maxNet,maxNetM,maxAvg,maxAvgM,sig,pendingFee,
+          actualNet,actualAvg:actualNet/Math.max(aMp,1)};
+}
+const SIG={g:["유지","bg"],y:["준비","by"],o:["해지검토","bo"],r:["유지할수록 손해","br"]};
 
-  let sig = "g";
-  if (maxNetM && TODAY >= maxNetM) sig = "r";
-  else if (maxAvgM && TODAY >= maxAvgM) sig = "o";
-  else if (maxAvgM && monthsApart(TODAY, maxAvgM) <= 1) sig = "y";
+/* ---------- 로드 / 쓰기 ---------- */
+let LINES=[], GROUP="none", VIEW="todo";
 
-  return { rows, maxNet, maxNetM, maxAvg, maxAvgM, sig,
-           actualNet, actualAvg: actualNet / Math.max(aMp, 1) };
+async function loadAll(){
+  const snap=await getDocs(collection(db,"lines"));
+  const out=[];
+  for(const d of snap.docs){
+    const months=(await getDocs(collection(db,"lines",d.id,"months"))).docs.map(x=>x.data());
+    out.push({...d.data(), id:d.id, months});
+  }
+  out.sort((a,b)=>(a.order??99)-(b.order??99)||a.id.localeCompare(b.id));
+  return out;
+}
+/** key === 'fee' 면 요금제, 아니면 혜택 key */
+async function saveCell(lineId, ym, key, value, checked){
+  const patch = key==="fee"
+    ? {fee:value, "checked.fee":checked}
+    : {[`values.${key}`]:value, [`checked.${key}`]:checked};
+  await updateDoc(doc(db,"lines",lineId,"months",ym), patch);
+  const L=LINES.find(x=>x.id===lineId), m=L.months.find(x=>x.ym===ym);
+  if(key==="fee") m.fee=value; else (m.values ||= {})[key]=value;
+  (m.checked ||= {})[key]=checked;
+  L._m=metrics(L);
 }
 
-const SIG = { g:["유지","bg"], y:["준비","by"], o:["해지검토","bo"], r:["유지할수록 손해","br"] };
-
-/* ---------- 로드 ---------- */
-let LINES = [], GROUP = "none";
-
-async function loadAll() {
-  const snap = await getDocs(collection(db, "lines"));
-  const out = [];
-  for (const d of snap.docs) {
-    const months = (await getDocs(collection(db, "lines", d.id, "months")))
-      .docs.map((x) => x.data());
-    out.push({ ...d.data(), id: d.id, months });
+/* ---------- 이번 달 할 일 ---------- */
+function todoItems(){
+  const out=[];
+  for(const L of LINES){
+    const mo=L.months.find(m=>m.ym===TODAY);
+    if(mo){
+      const ck=mo.checked||{};
+      for(const b of L.benefits||[]){
+        if(b.day==null) continue;          // 예정일 없는 1회성 혜택은 제외
+        if(ck[b.key]) continue;
+        out.push({kind:"ben", day:b.day, rawDay:b.rawDay, L, ym:TODAY, key:b.key,
+                  title:b.label, sub:`${L.shortLabel}${b.channel?" · "+b.channel:""}`,
+                  value:mo.values?.[b.key]});
+      }
+    }
+    // 전월 요금제는 이번 달에 지불된다 → 이번 달에 확인 가능
+    const pm=L.months.find(m=>m.ym===prevYm(TODAY));
+    if(pm && !(pm.checked||{}).fee){
+      const d=dayHintNum(L.payment?.dayHint);
+      out.push({kind:"fee", day:d??99, rawDay:L.payment?.dayHint||L.payment?.method||"-",
+                L, ym:pm.ym, key:"fee", title:`요금제 (${pm.ym}분)`,
+                sub:`${L.shortLabel} · ${L.payment?.method||""}`, value:pm.fee});
+    }
   }
-  out.sort((a, b) => (a.order ?? 99) - (b.order ?? 99) || a.id.localeCompare(b.id));
-  return out;
+  return out.sort((a,b)=>a.day-b.day || a.L.id.localeCompare(b.L.id));
+}
+
+function renderTodo(){
+  const alerts=$("todoAlerts"); alerts.innerHTML="";
+  for(const L of LINES.filter(x=>x._m.sig==="o"||x._m.sig==="r")){
+    const m=L._m;
+    alerts.append(el("div","alert",
+      `<strong>${L.shortLabel}</strong> — ${SIG[m.sig][0]}. ` +
+      (m.sig==="r" ? `최대 실이득 시점(${m.maxNetM})을 지났습니다.`
+                   : `최대 월평균 ${m.maxAvgM} 도달. 빨강까지 ${monthsApart(TODAY,m.maxNetM)}개월.`)));
+  }
+  const items=todoItems(), body=$("todoBody"); body.innerHTML="";
+  if(!items.length){
+    body.append(el("div","card",`<p class="muted" style="margin:0">이번 달 확인할 항목이 없습니다.</p>`));
+    return;
+  }
+  const box=el("div","todo");
+  for(const it of items){
+    const row=el("div","item");
+    row.innerHTML=`<div class="day">${it.rawDay||"-"}</div>
+      <div class="itemMain"><div class="itemTitle">${it.title}</div>
+        <div class="itemSub">${it.sub}</div></div>
+      <div class="amt">${it.value==null?"·":won(it.value)}</div>`;
+    const btn=el("button",null,"완료");
+    btn.onclick=async()=>{
+      btn.disabled=true;
+      try{ await saveCell(it.L.id,it.ym,it.key,it.value??0,true); render(); }
+      catch(e){ fail(e); btn.disabled=false; }
+    };
+    row.append(btn); box.append(row);
+  }
+  body.append(box);
+  body.append(el("p","foot",
+    `예정일 순으로 정렬됩니다. 가입 시 1회성 혜택(예정일 <code>-</code>)은 목록에서 제외했습니다. ` +
+    `요금제는 그 달 금액이 다음 달에 지불되므로 <strong>전월분</strong>이 이번 달 할 일로 올라옵니다.`));
 }
 
 /* ---------- 전체 현황 ---------- */
-function lineCard(L) {
-  const m = L._m, [label, cls] = SIG[m.sig];
-  const to = m.sig === "r" ? null
-           : m.sig === "o" ? monthsApart(TODAY, m.maxNetM)
-           : monthsApart(TODAY, m.maxAvgM);
-  const tail = m.sig === "r" ? "최대 실이득 시점 지남"
-             : m.sig === "o" ? `빨강까지 ${to}개월`
-             : `해지검토까지 ${to}개월`;
-  const b = el("button", "lineCard");
-  b.innerHTML =
-    `<div class="lineTop">
-       <span class="dot ${m.sig}"></span>
-       <span class="name">${L.shortLabel || L.id}</span>
-       <span class="badge ${cls}">${label}</span>
-     </div>
-     <div class="meta">${L.label || ""}</div>
-     <div class="meta">${L.planName || ""} · ${tail}</div>
-     <div class="meta">최대 실이득 <strong>${won(m.maxNet)}</strong> @${m.maxNetM}
-        · 최대 월평균 <strong>${won(m.maxAvg)}</strong> @${m.maxAvgM}</div>`;
-  b.onclick = () => openDetail(L.id);
+function lineCard(L){
+  const m=L._m,[label,cls]=SIG[m.sig];
+  const to = m.sig==="r"?null : m.sig==="o"?monthsApart(TODAY,m.maxNetM):monthsApart(TODAY,m.maxAvgM);
+  const tail = m.sig==="r"?"최대 실이득 시점 지남"
+             : m.sig==="o"?`빨강까지 ${to}개월` : `해지검토까지 ${to}개월`;
+  const b=el("button","lineCard");
+  b.innerHTML=`<div class="lineTop"><span class="dot ${m.sig}"></span>
+      <span class="name">${L.shortLabel||L.id}</span>
+      <span class="badge ${cls}">${label}</span></div>
+    <div class="meta">${L.label||""}</div>
+    <div class="meta">${L.planName||""} · ${tail}</div>
+    <div class="meta">최대 실이득 <strong>${won(m.maxNet)}</strong> @${m.maxNetM}
+      · 최대 월평균 <strong>${won(m.maxAvg)}</strong> @${m.maxAvgM}</div>`;
+  b.onclick=()=>openDetail(L.id);
   return b;
 }
-
-const GROUPERS = {
-  none:    () => null,
-  carrier: (L) => L.carrier || "(미지정)",
-  owner:   (L) => L.owner || "(미지정)",
-  start:   (L) => L.startMonth || "(미지정)",
-};
-
-function renderList() {
-  const body = $("listBody"); body.innerHTML = "";
-  const order = { r:0, o:1, y:2, g:3 };
-  const sorted = [...LINES].sort((a, b) => order[a._m.sig] - order[b._m.sig]);
-  const key = GROUPERS[GROUP];
-
-  if (GROUP === "none") {
-    const box = el("div", "lines");
-    sorted.forEach((L) => box.append(lineCard(L)));
-    body.append(box);
-    return;
+const GROUPERS={none:()=>null, carrier:L=>L.carrier||"(미지정)",
+                owner:L=>L.owner||"(미지정)", start:L=>L.startMonth||"(미지정)"};
+function renderList(){
+  const body=$("listBody"); body.innerHTML="";
+  const order={r:0,o:1,y:2,g:3};
+  const sorted=[...LINES].sort((a,b)=>order[a._m.sig]-order[b._m.sig]);
+  if(GROUP==="none"){
+    const box=el("div","lines"); sorted.forEach(L=>box.append(lineCard(L))); body.append(box); return;
   }
-  const groups = new Map();
-  for (const L of sorted) {
-    const k = key(L);
-    if (!groups.has(k)) groups.set(k, []);
-    groups.get(k).push(L);
-  }
-  for (const [k, arr] of [...groups].sort((a, b) => String(a[0]).localeCompare(String(b[0])))) {
-    body.append(el("div", "grp", `${k} · ${arr.length}개`));
-    const box = el("div", "lines");
-    arr.forEach((L) => box.append(lineCard(L)));
-    body.append(box);
+  const key=GROUPERS[GROUP], groups=new Map();
+  for(const L of sorted){ const k=key(L); if(!groups.has(k)) groups.set(k,[]); groups.get(k).push(L); }
+  for(const [k,arr] of [...groups].sort((a,b)=>String(a[0]).localeCompare(String(b[0])))){
+    body.append(el("div","grp",`${k} · ${arr.length}개`));
+    const box=el("div","lines"); arr.forEach(L=>box.append(lineCard(L))); body.append(box);
   }
 }
 
 /* ---------- 회선 상세 ---------- */
-function renderDetail(L) {
-  const m = L._m, [label, cls] = SIG[m.sig];
-  const bens = L.benefits || [];
-  const d = $("detailBody"); d.innerHTML = "";
+let CURRENT=null;
+function renderDetail(L){
+  CURRENT=L.id;
+  const m=L._m,[label,cls]=SIG[m.sig], bens=L.benefits||[];
+  const d=$("detailBody"); d.innerHTML="";
+  d.append(el("div","",`
+    <div class="lineTop" style="margin-bottom:2px"><span class="dot ${m.sig}"></span>
+      <h1 style="font-size:18px;margin:0">${L.shortLabel||L.id}</h1>
+      <span class="badge ${cls}">${label}</span></div>
+    <p class="meta">${L.label||""}</p>
+    <p class="meta">${L.planName||""} · ${L.role||""} · 납부 ${L.payment?.method||"?"}${
+      L.payment?.dayHint?`(${L.payment.dayHint})`:""}${L.payment?.note?` · ${L.payment.note}`:""}</p>`));
 
-  d.append(el("div", "", `
-    <div class="lineTop" style="margin-bottom:2px">
-      <span class="dot ${m.sig}"></span>
-      <h1 style="font-size:18px;margin:0">${L.shortLabel || L.id}</h1>
-      <span class="badge ${cls}">${label}</span>
-    </div>
-    <p class="meta">${L.label || ""}</p>
-    <p class="meta">${L.planName || ""} · ${L.role || ""} · 납부 ${
-      L.payment?.method || "?"}${L.payment?.dayHint ? `(${L.payment.dayHint})` : ""}${
-      L.payment?.note ? ` · ${L.payment.note}` : ""}</p>`));
-
-  d.append(el("div", "kpis", `
+  d.append(el("div","kpis",`
     <div class="kpi"><div class="kpiLabel">최대 실이득</div>
       <div class="kpiVal">${won(m.maxNet)}</div><div class="kpiSub">${m.maxNetM}</div></div>
     <div class="kpi"><div class="kpiLabel">최대 월평균</div>
@@ -313,125 +404,158 @@ function renderDetail(L) {
     <div class="kpi"><div class="kpiLabel">누적 월평균</div>
       <div class="kpiVal">${won(m.actualAvg)}</div><div class="kpiSub">확인완료 기준</div></div>`));
 
-  const head = `<tr><th>년월</th><th>M+</th><th>요금제</th>` +
-    bens.map((b) => `<th>${b.label}<br><span style="font-weight:400">${b.rawDay || "-"}</span></th>`).join("") +
-    `<th>실이득</th><th>월평균</th><th>비고</th></tr>`;
+  if(m.pendingFee>0) d.append(el("p","foot",
+    `<strong>누적 실적이 최대치보다 커 보일 수 있습니다 — 정상입니다.</strong>
+     실적은 확인완료된 값만 셉니다. 그 달 요금제는 다음 달에 지불되므로 아직 미확인이고,
+     그만큼 요금이 덜 빠져 실적이 일시적으로 부풀어 보입니다.
+     현재 미확인 요금 <strong>${won(m.pendingFee)}원</strong>을 확인완료로 바꾸면 맞아떨어집니다.`));
 
-  const body = m.rows.map((r) => {
-    const past = m.maxAvgM && r.ym > m.maxAvgM;
-    const ck = r.checked || {};
-    const cells = bens.map((b) => {
-      const v = r.values?.[b.key];
-      return `<td>${v == null ? "·" : won(v)}${ck[b.key] ? ' <span class="ck">✓</span>' : ""}</td>`;
+  const head=`<tr><th>년월</th><th>M+</th><th>요금제</th>`+
+    bens.map(b=>`<th>${b.label}<br><span style="font-weight:400">${b.rawDay||"-"}</span></th>`).join("")+
+    `<th>실이득</th><th>월평균</th><th>비고</th></tr>`;
+  const body=m.rows.map(r=>{
+    const past=m.maxAvgM&&r.ym>m.maxAvgM, ck=r.checked||{};
+    const cells=bens.map(b=>{
+      const v=r.values?.[b.key];
+      return `<td class="cell" data-ym="${r.ym}" data-key="${b.key}">${
+        v==null?"·":won(v)}${ck[b.key]?' <span class="ck">✓</span>':""}</td>`;
     }).join("");
-    const klass = [past ? "past" : "", r.ym === m.maxAvgM ? "peak" : "", r.ym === TODAY ? "now" : ""]
-      .filter(Boolean).join(" ");
-    return `<tr class="${klass}"><td>${r.ym}</td><td>${r.mPlus ?? ""}</td>` +
-      `<td>${won(r.fee)}${ck.fee ? ' <span class="ck">✓</span>' : ""}</td>` +
-      cells + `<td>${won(r.net)}</td><td>${won(r.avg)}</td>` +
-      `<td style="text-align:left;white-space:normal">${r.note || ""}</td></tr>`;
+    const klass=[past?"past":"", r.ym===m.maxAvgM?"peak":"", r.ym===TODAY?"now":""].filter(Boolean).join(" ");
+    return `<tr class="${klass}"><td>${r.ym}</td><td>${r.mPlus??""}</td>`+
+      `<td class="cell" data-ym="${r.ym}" data-key="fee">${won(r.fee)}${
+        ck.fee?' <span class="ck">✓</span>':""}</td>`+
+      cells+`<td>${won(r.net)}</td><td>${won(r.avg)}</td>`+
+      `<td style="text-align:left;white-space:normal">${r.note||""}</td></tr>`;
   }).join("");
 
-  d.append(el("div", "card", `<div class="scroll"><table><thead>${head}</thead><tbody>${body}</tbody></table></div>
+  const tbl=el("div","card",`<div class="scroll"><table><thead>${head}</thead><tbody>${body}</tbody></table></div>
     <p class="muted" style="margin:12px 0 0">
       주황 선이 <strong>최대 월평균 시점</strong>입니다. 그 아래(흐린 행)는 유지할수록 월평균이 떨어집니다.
-      <span class="ck">✓</span>는 확인완료된 값입니다.</p>`));
+      <span class="ck">✓</span>는 확인완료. <strong>금액을 누르면 수정·확인완료</strong>할 수 있습니다.</p>`);
+  tbl.querySelectorAll("td.cell").forEach(td=>{
+    td.onclick=()=>openEditor(L, td.dataset.ym, td.dataset.key);
+  });
+  d.append(tbl);
 
-  const extras = [];
-  if (L.contacts?.length) extras.push(`<h2>연락처</h2>` +
-    L.contacts.map((c) => `<p class="muted"><code>${c.phone}</code> ${c.note || ""}</p>`).join(""));
-  if (L.cautions?.length) extras.push(`<h2>주의사항</h2>` +
-    L.cautions.map((c) => `<p class="muted">${c}</p>`).join(""));
-  const bnotes = bens.filter((b) => b.note);
-  if (bnotes.length) extras.push(`<h2>혜택 메모</h2>` +
-    bnotes.map((b) => `<p class="muted"><strong>${b.label}</strong> — ${b.note}</p>`).join(""));
-  if (extras.length) d.append(el("div", "card", extras.join("")));
+  const ex=[];
+  if(L.contacts?.length) ex.push(`<h2>연락처</h2>`+L.contacts.map(c=>
+    `<p class="muted"><code>${c.phone}</code> ${c.note||""}</p>`).join(""));
+  if(L.cautions?.length) ex.push(`<h2>주의사항</h2>`+L.cautions.map(c=>`<p class="muted">${c}</p>`).join(""));
+  const bn=bens.filter(b=>b.note);
+  if(bn.length) ex.push(`<h2>혜택 메모</h2>`+bn.map(b=>
+    `<p class="muted"><strong>${b.label}</strong> — ${b.note}</p>`).join(""));
+  if(ex.length) d.append(el("div","card",ex.join("")));
+}
+function openDetail(id){
+  renderDetail(LINES.find(L=>L.id===id));
+  show($("viewTodo"),false); show($("viewList"),false); show($("viewDetail"),true);
+  window.scrollTo(0,0);
 }
 
-function openDetail(id) {
-  renderDetail(LINES.find((L) => L.id === id));
-  show($("viewList"), false); show($("viewDetail"), true);
-  window.scrollTo(0, 0);
+/* ---------- 값 편집 모달 ---------- */
+let EDIT=null;
+function openEditor(L, ym, key){
+  const m=L.months.find(x=>x.ym===ym);
+  const ben=(L.benefits||[]).find(b=>b.key===key);
+  EDIT={lineId:L.id, ym, key};
+  $("mTitle").textContent = key==="fee" ? "요금제" : (ben?.label||key);
+  $("mSub").textContent = `${L.shortLabel} · ${ym}` +
+    (key==="fee" ? ` · 다음 달에 지불` : (ben?.rawDay?` · 예정 ${ben.rawDay}`:""));
+  $("mVal").value = (key==="fee" ? m.fee : m.values?.[key]) ?? 0;
+  $("mCk").checked = !!(m.checked||{})[key];
+  $("mErr").textContent="";
+  show($("mask"),true); $("mVal").focus();
 }
+const closeEditor=()=>{ show($("mask"),false); EDIT=null; };
+$("mCancel").onclick=closeEditor;
+$("mask").onclick=(e)=>{ if(e.target===$("mask")) closeEditor(); };
+$("mSave").onclick=async()=>{
+  if(!EDIT) return;
+  $("mSave").disabled=true; $("mErr").textContent="";
+  try{
+    await saveCell(EDIT.lineId, EDIT.ym, EDIT.key, Number($("mVal").value)||0, $("mCk").checked);
+    closeEditor(); render();
+  }catch(e){ $("mErr").textContent=e?.message||String(e); }
+  $("mSave").disabled=false;
+};
 
 /* ---------- 검증 ---------- */
-const EXPECTED = {
-  "본인 · KTM": [390620, "2027-05", 36860, "2027-01"],
-  "본인 · 유플": [202730, "2026-12", 53165, "2026-08"],
-  "본인 · 헬모": [177570, "2027-03", 31254, "2026-12"],
-  "Li · 유플": [176380, "2027-05", 40380, "2026-07"],
-  "Sj · 유플": [243330, "2027-03", 35272, "2027-02"],
+const EXPECTED={
+  "본인 · KTM":[390620,"2027-05",36860,"2027-01"],
+  "본인 · 유플":[202730,"2026-12",53165,"2026-08"],
+  "본인 · 헬모":[177570,"2027-03",31254,"2026-12"],
+  "Li · 유플":[176380,"2027-05",40380,"2026-07"],
+  "Sj · 유플":[243330,"2027-03",35272,"2027-02"],
 };
-function renderVerify() {
-  $("verifyBody").innerHTML = LINES.map((L) => {
-    const m = L._m, e = EXPECTED[L.id];
-    if (!e) return `<tr><td>${L.shortLabel}</td><td colspan="3" class="muted">기준값 없음</td></tr>`;
-    const okN = Math.round(m.maxNet) === e[0] && m.maxNetM === e[1];
-    const okA = Math.round(m.maxAvg) === e[2] && m.maxAvgM === e[3];
-    const good = okN && okA;
-    return `<tr><td>${L.shortLabel}</td>
-      <td>${won(m.maxNet)} @${m.maxNetM}</td>
+function renderVerify(){
+  $("verifyBody").innerHTML=LINES.map(L=>{
+    const m=L._m,e=EXPECTED[L.id];
+    if(!e) return `<tr><td>${L.shortLabel}</td><td colspan="3" class="muted">기준값 없음</td></tr>`;
+    const good=Math.round(m.maxNet)===e[0]&&m.maxNetM===e[1]&&
+               Math.round(m.maxAvg)===e[2]&&m.maxAvgM===e[3];
+    return `<tr><td>${L.shortLabel}</td><td>${won(m.maxNet)} @${m.maxNetM}</td>
       <td>${won(m.maxAvg)} @${m.maxAvgM}</td>
-      <td class="${good ? "ok" : "bad"}">${good ? "일치" : "불일치"}</td></tr>`;
+      <td class="${good?"ok":"bad"}">${good?"일치":"불일치"}</td></tr>`;
   }).join("");
-  window.__verify = LINES.map((L) => {
-    const m = L._m, e = EXPECTED[L.id] || [];
-    return { id: L.id,
-             net: Math.round(m.maxNet) === e[0] && m.maxNetM === e[1],
-             avg: Math.round(m.maxAvg) === e[2] && m.maxAvgM === e[3] };
-  });
+  window.__verify=LINES.map(L=>{const m=L._m,e=EXPECTED[L.id]||[];
+    return {id:L.id, ok: Math.round(m.maxNet)===e[0]&&m.maxNetM===e[1]&&
+                         Math.round(m.maxAvg)===e[2]&&m.maxAvgM===e[3]};});
 }
 
 /* ---------- 다시 가져오기 ---------- */
-let armed = false;
-$("btnImport").onclick = async () => {
-  try {
-    if (!armed) { armed = true; show($("overwriteNote"), true);
-                  $("btnImport").textContent = "덮어쓰기 진행"; return; }
-    $("btnImport").disabled = true; $("importStatus").textContent = "기록 중…";
-    const src = await (await fetch("data/altteul_lines.json", { cache: "no-store" })).json();
-    const batch = writeBatch(db);
-    for (const L of src) {
-      const { months, ...meta } = L;
-      batch.set(doc(db, "lines", L.id), meta);
-      for (const m of months) batch.set(doc(db, "lines", L.id, "months", m.ym), m);
-    }
+let armed=false;
+$("btnImport").onclick=async()=>{
+  try{
+    if(!armed){ armed=true; show($("overwriteNote"),true);
+                $("btnImport").textContent="덮어쓰기 진행"; return; }
+    $("btnImport").disabled=true; $("importStatus").textContent="기록 중…";
+    const src=await (await fetch("data/altteul_lines.json",{cache:"no-store"})).json();
+    const batch=writeBatch(db);
+    for(const L of src){ const {months,...meta}=L;
+      batch.set(doc(db,"lines",L.id),meta);
+      for(const m of months) batch.set(doc(db,"lines",L.id,"months",m.ym),m); }
     await batch.commit();
-    $("importStatus").textContent = "완료";
-    armed = false; show($("overwriteNote"), false);
-    $("btnImport").textContent = "JSON에서 다시 가져오기";
+    $("importStatus").textContent="완료"; armed=false; show($("overwriteNote"),false);
+    $("btnImport").textContent="JSON에서 다시 가져오기";
     await boot();
-  } catch (e) { fail(e); $("importStatus").textContent = "실패"; }
-  $("btnImport").disabled = false;
+  }catch(e){ fail(e); $("importStatus").textContent="실패"; }
+  $("btnImport").disabled=false;
 };
 
-/* ---------- 부팅 ---------- */
-async function boot() {
-  LINES = await loadAll();
-  LINES.forEach((L) => { L._m = metrics(L); });
-  renderList(); renderVerify();
-  window.__ready = true;
+/* ---------- 렌더 / 부팅 ---------- */
+function render(){
+  renderTodo(); renderList(); renderVerify();
+  if(CURRENT && !$("viewDetail").classList.contains("hide"))
+    renderDetail(LINES.find(L=>L.id===CURRENT));
+}
+async function boot(){
+  LINES=await loadAll();
+  LINES.forEach(L=>{ L._m=metrics(L); });
+  render(); window.__ready=true;
+}
+function setView(v){
+  VIEW=v;
+  show($("viewTodo"), v==="todo"); show($("viewList"), v==="list"); show($("viewDetail"), false);
+  document.querySelectorAll("[data-view]").forEach(b=>
+    b.setAttribute("aria-selected", String(b.dataset.view===v)));
 }
 
-$("today").textContent = "기준 " + TODAY;
-onAuthStateChanged(auth, async (user) => {
-  $("err").textContent = "";
-  show($("app"), !!user); show($("signedOut"), !user);
-  if (!user) return;
-  $("who").textContent = user.email || "";
-  try { await boot(); } catch (e) { fail(e); }
+$("today").textContent="기준 "+TODAY;
+onAuthStateChanged(auth, async (user)=>{
+  $("err").textContent="";
+  show($("app"),!!user); show($("signedOut"),!user);
+  if(!user) return;
+  $("who").textContent=user.email||"";
+  try{ await boot(); }catch(e){ fail(e); }
 });
-
-$("btnIn").onclick  = () => signInWithPopup(auth, provider).catch(fail);
-$("btnOut").onclick = () => signOut(auth).catch(fail);
-$("btnBack").onclick = () => { show($("viewDetail"), false); show($("viewList"), true); };
-document.querySelectorAll("[data-grp]").forEach((b) => {
-  b.onclick = () => {
-    GROUP = b.dataset.grp;
-    document.querySelectorAll("[data-grp]").forEach((x) =>
-      x.setAttribute("aria-pressed", String(x === b)));
-    renderList();
-  };
+$("btnIn").onclick=()=>signInWithPopup(auth,provider).catch(fail);
+$("btnOut").onclick=()=>signOut(auth).catch(fail);
+$("btnBack").onclick=()=>setView(VIEW);
+document.querySelectorAll("[data-view]").forEach(b=>{ b.onclick=()=>setView(b.dataset.view); });
+document.querySelectorAll("[data-grp]").forEach(b=>{
+  b.onclick=()=>{ GROUP=b.dataset.grp;
+    document.querySelectorAll("[data-grp]").forEach(x=>x.setAttribute("aria-pressed",String(x===b)));
+    renderList(); };
 });
 </script>
 </body>
