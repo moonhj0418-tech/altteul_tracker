@@ -191,6 +191,11 @@
     <label class="muted" for="mVal">금액</label>
     <input type="number" id="mVal" step="10">
     <label class="ckline"><input type="checkbox" id="mCk"><span>확인완료</span></label>
+    <div id="mRecvWrap" class="hide" style="margin-bottom:14px">
+      <label class="muted" for="mRecv">수령일</label>
+      <input type="date" id="mRecv">
+      <p class="muted" id="mNext" style="margin:6px 0 0"></p>
+    </div>
     <div class="row" style="justify-content:flex-end">
       <button id="mCancel">취소</button>
       <button class="primary" id="mSave">저장</button>
@@ -239,6 +244,25 @@ function bizDayFrom(ym, startDay, n){
   }
   return d.getMonth()===m-1 ? d.getDate() : 31;   // 달을 넘기면 월말로 취급
 }
+const addDays = (iso, n) => {
+  const d=new Date(iso+"T00:00:00"); d.setDate(d.getDate()+n);
+  return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
+};
+const todayIso = () => { const d=new Date();
+  return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0"); };
+
+/** 주기형 혜택(PAY쿠폰 등)의 다음 예정일.
+    고정된 날짜가 없고 "직전 수령일 + N일"로 굴러간다.
+    아직 한 번도 못 받았으면 가입일 기준으로 계산해둔 firstDue 를 쓴다. */
+function intervalDue(L, b){
+  let last=null;
+  for(const m of L.months){
+    const r=(m.receivedAt||{})[b.key];
+    if(r && (!last || r>last)) last=r;
+  }
+  return last ? addDays(last, b.intervalDays||30) : (b.firstDue||null);
+}
+
 /** '9~10일' → 9, '20일경' → 20, '월말' → 31
     범위 표기는 **시작일**을 쓴다. 범위를 적어둔 이유가 공휴일 때문에 지급이
     밀릴 수 있어서이므로, "빨라야 이날"이 기준이 되어야 한다. */
@@ -297,14 +321,17 @@ async function loadAll(){
   return out;
 }
 /** key === 'fee' 면 요금제, 아니면 혜택 key */
-async function saveCell(lineId, ym, key, value, checked){
+async function saveCell(lineId, ym, key, value, checked, receivedAt){
   const patch = key==="fee"
     ? {fee:value, "checked.fee":checked}
     : {[`values.${key}`]:value, [`checked.${key}`]:checked};
+  // 주기형 혜택은 실제 수령일을 남긴다 — 다음 예정일이 여기서 계산된다
+  if(receivedAt) patch[`receivedAt.${key}`]=receivedAt;
   await updateDoc(doc(db,"lines",lineId,"months",ym), patch);
   const L=LINES.find(x=>x.id===lineId), m=L.months.find(x=>x.ym===ym);
   if(key==="fee") m.fee=value; else (m.values ||= {})[key]=value;
   (m.checked ||= {})[key]=checked;
+  if(receivedAt) (m.receivedAt ||= {})[key]=receivedAt;
   L._m=metrics(L);
 }
 
@@ -316,6 +343,18 @@ function todoItems(){
     if(mo){
       const ck=mo.checked||{};
       for(const b of L.benefits||[]){
+        // 주기형은 고정일이 없으므로 직전 수령일에서 다음 예정일을 계산한다
+        if(b.cycle==="interval"){
+          const due=intervalDue(L,b);
+          if(!due || due.slice(0,7)>TODAY) continue;   // 아직 예정일이 안 왔다
+          const dm=L.months.find(m=>m.ym===due.slice(0,7)) || mo;
+          if((dm.checked||{})[b.key]) continue;
+          out.push({kind:"ben", day:+due.slice(8,10), rawDay:due.slice(5).replace("-","/"),
+                    L, ym:dm.ym, key:b.key, due, interval:true,
+                    title:b.label, sub:`${L.shortLabel}${b.channel?" · "+b.channel:""}`,
+                    value:dm.values?.[b.key]});
+          continue;
+        }
         // rawDay 를 단일 기준으로 삼는다. 저장된 day 는 변환 시점 값이라 규칙이 바뀌면 어긋난다.
         const day=dayHintNum(b.rawDay);
         if(day==null) continue;            // 예정일 없는 1회성 혜택은 제외
@@ -366,6 +405,8 @@ function renderTodo(){
     const btn=el("button",null,"완료");
     btn.onclick=async()=>{
       btn.disabled=true;
+      // 주기형은 수령일이 다음 예정일의 기준이 되므로, 날짜를 확인할 수 있게 편집창을 연다
+      if(it.interval){ btn.disabled=false; openEditor(it.L, it.ym, it.key); return; }
       try{ await saveCell(it.L.id,it.ym,it.key,it.value??0,true); render(); }
       catch(e){ fail(e); btn.disabled=false; }
     };
@@ -496,15 +537,21 @@ function renderDetail(L){
      현재 미확인 요금 <strong>${won(m.pendingFee)}원</strong>을 확인완료로 바꾸면 맞아떨어집니다.`));
 
   const head=`<tr><th>년월</th><th>M+</th><th>요금제</th>`+
-    bens.map(b=>`<th>${b.label}<span class="thDay">${b.rawDay||"-"}</span>`+
-      (b.channel?`<span class="thCh">${b.channel}</span>`:"")+`</th>`).join("")+
+    bens.map(b=>{
+      // 주기형은 고정일이 없으므로 계산된 다음 예정일을 보여준다
+      const due=b.cycle==="interval" ? intervalDue(L,b) : null;
+      const when=due ? due.slice(5).replace("-","/")+" 예정" : (b.rawDay||"-");
+      return `<th>${b.label}<span class="thDay">${when}</span>`+
+        (b.channel?`<span class="thCh">${b.channel}</span>`:"")+`</th>`;
+    }).join("")+
     `<th>실이득</th><th>월평균</th><th>비고</th></tr>`;
   const body=m.rows.map(r=>{
     const past=m.maxAvgM&&r.ym>m.maxAvgM, ck=r.checked||{};
     const cells=bens.map(b=>{
-      const v=r.values?.[b.key];
+      const v=r.values?.[b.key], rc=(r.receivedAt||{})[b.key];
       return `<td class="cell" data-ym="${r.ym}" data-key="${b.key}">${
-        v==null?"·":won(v)}${ck[b.key]?' <span class="ck">✓</span>':""}</td>`;
+        v==null?"·":won(v)}${ck[b.key]?' <span class="ck">✓</span>':""}${
+        rc?`<span class="thDay" style="text-transform:none">${rc.slice(5).replace("-","/")} 수령</span>`:""}</td>`;
     }).join("");
     const klass=[past?"past":"", r.ym===m.maxAvgM?"peak":"", r.ym===TODAY?"now":""].filter(Boolean).join(" ");
     return `<tr class="${klass}"><td>${r.ym}</td><td>${r.mPlus??""}</td>`+
@@ -551,6 +598,16 @@ function openEditor(L, ym, key){
   $("mVal").value = (key==="fee" ? m.fee : m.values?.[key]) ?? 0;
   $("mCk").checked = !!(m.checked||{})[key];
   $("mErr").textContent="";
+
+  // 주기형 혜택이면 수령일을 함께 받는다. 이 값이 다음 예정일의 기준이 된다.
+  const iv = ben && ben.cycle==="interval";
+  show($("mRecvWrap"), !!iv);
+  if(iv){
+    $("mRecv").value = (m.receivedAt||{})[key] || intervalDue(L,ben) || todayIso();
+    const upd=()=>{ $("mNext").textContent = $("mRecv").value
+      ? `다음 예정일 ${addDays($("mRecv").value, ben.intervalDays||30)}` : ""; };
+    $("mRecv").oninput=upd; upd();
+  }
   show($("mask"),true); $("mVal").focus();
 }
 const closeEditor=()=>{ show($("mask"),false); EDIT=null; };
@@ -560,7 +617,9 @@ $("mSave").onclick=async()=>{
   if(!EDIT) return;
   $("mSave").disabled=true; $("mErr").textContent="";
   try{
-    await saveCell(EDIT.lineId, EDIT.ym, EDIT.key, Number($("mVal").value)||0, $("mCk").checked);
+    const recv = $("mRecvWrap").classList.contains("hide") ? null : ($("mRecv").value || null);
+    await saveCell(EDIT.lineId, EDIT.ym, EDIT.key,
+                   Number($("mVal").value)||0, $("mCk").checked, recv);
     closeEditor(); render();
   }catch(e){ $("mErr").textContent=e?.message||String(e); }
   $("mSave").disabled=false;
