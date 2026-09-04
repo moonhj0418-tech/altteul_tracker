@@ -135,6 +135,7 @@
 
     <!-- 전체 현황 -->
     <div id="viewList" class="hide">
+      <div id="summaryBox"></div>
       <div class="row" style="margin-bottom:4px">
         <span class="muted" style="margin-right:4px">묶기</span>
         <button class="chip" data-grp="none"    aria-pressed="true">없음</button>
@@ -255,10 +256,12 @@ function metrics(line){
   }
   const actualNet=aBen-aFee;
   let sig="g";
+  // actualBen/actualFee 는 사용자별·전체 집계에 쓰인다
   if(maxNetM&&TODAY>=maxNetM) sig="r";
   else if(maxAvgM&&TODAY>=maxAvgM) sig="o";
   else if(maxAvgM&&monthsApart(TODAY,maxAvgM)<=1) sig="y";
   return {rows,maxNet,maxNetM,maxAvg,maxAvgM,sig,pendingFee,
+          actualBen:aBen, actualFee:aFee,
           actualNet,actualAvg:actualNet/Math.max(aMp,1)};
 }
 const SIG={g:["유지","bg"],y:["준비","by"],o:["해지검토","bo"],r:["유지할수록 손해","br"]};
@@ -369,7 +372,59 @@ function lineCard(L){
 }
 const GROUPERS={none:()=>null, carrier:L=>L.carrier||"(미지정)",
                 owner:L=>L.owner||"(미지정)", start:L=>L.startMonth||"(미지정)"};
+
+/* ---------- 누계 실적 집계 ----------
+   전부 확인완료된 값만 센다. 계획값은 섞지 않는다.               */
+function totalsOf(lines){
+  return lines.reduce((t,L)=>({
+    n:t.n+1, ben:t.ben+L._m.actualBen, fee:t.fee+L._m.actualFee,
+    net:t.net+L._m.actualNet, pending:t.pending+L._m.pendingFee,
+  }), {n:0,ben:0,fee:0,net:0,pending:0});
+}
+function renderSummary(){
+  const box=$("summaryBox"); box.innerHTML="";
+  if(!LINES.length) return;
+  const all=totalsOf(LINES);
+
+  const owners=new Map();
+  for(const L of LINES){
+    const k=L.owner||"(미지정)";
+    if(!owners.has(k)) owners.set(k,[]);
+    owners.get(k).push(L);
+  }
+  const rows=[...owners].map(([k,arr])=>[k,totalsOf(arr)])
+    .sort((a,b)=>b[1].net-a[1].net);
+
+  const card=el("div","card");
+  card.style.marginBottom="18px";
+  card.innerHTML=`
+    <h2>누계 실적</h2>
+    <div class="kpis">
+      <div class="kpi"><div class="kpiLabel">실이득</div>
+        <div class="kpiVal">${won(all.net)}</div>
+        <div class="kpiSub">회선 ${all.n}개 합산</div></div>
+      <div class="kpi"><div class="kpiLabel">받은 혜택</div>
+        <div class="kpiVal">${won(all.ben)}</div><div class="kpiSub">확인완료분</div></div>
+      <div class="kpi"><div class="kpiLabel">낸 요금</div>
+        <div class="kpiVal">${won(all.fee)}</div><div class="kpiSub">확인완료분</div></div>
+    </div>
+    <div class="scroll"><table>
+      <thead><tr><th>사용자</th><th>회선</th><th>받은 혜택</th><th>낸 요금</th><th>실이득</th></tr></thead>
+      <tbody>${rows.map(([k,t])=>
+        `<tr><td>${k}</td><td>${t.n}</td><td>${won(t.ben)}</td>
+             <td>${won(t.fee)}</td><td><strong>${won(t.net)}</strong></td></tr>`).join("")}
+        <tr><td><strong>전체</strong></td><td><strong>${all.n}</strong></td>
+            <td><strong>${won(all.ben)}</strong></td><td><strong>${won(all.fee)}</strong></td>
+            <td><strong>${won(all.net)}</strong></td></tr>
+      </tbody></table></div>
+    <p class="foot" style="margin-bottom:0">
+      ${TODAY}까지 <strong>확인완료 처리한 값만</strong> 셉니다. 계획값은 섞지 않았습니다.
+      ${all.pending>0?`아직 확인 안 된 요금 <strong>${won(all.pending)}원</strong>이 있어
+        그만큼 실이득이 높게 잡혀 있습니다 — 그 달 요금은 다음 달에 지불되기 때문입니다.`:""}</p>`;
+  box.append(card);
+}
 function renderList(){
+  renderSummary();
   const body=$("listBody"); body.innerHTML="";
   const order={r:0,o:1,y:2,g:3};
   const sorted=[...LINES].sort((a,b)=>order[a._m.sig]-order[b._m.sig]);
