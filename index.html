@@ -85,6 +85,7 @@
   .itemMain{flex:1; min-width:0}
   .itemTitle{font-size:14.5px}
   .itemSub{color:var(--muted); font-size:12.5px}
+  .itemPlan{color:var(--muted); font-size:12px; opacity:.75; margin-top:1px}
   .amt{font-variant-numeric:tabular-nums; font-size:13.5px; color:var(--muted)}
   .alert{border-left:3px solid var(--o); padding-left:12px; margin:4px 0 14px; font-size:13.5px}
   /* 모달 */
@@ -336,6 +337,13 @@ async function saveCell(lineId, ym, key, value, checked, receivedAt){
 }
 
 /* ---------- 이번 달 할 일 ---------- */
+/** 회선 식별줄 — 사람 · 통신사 · YYMM · 번호 뒤 6자리 */
+const lineSub = (L) => [
+  L.owner, L.carrierShort,
+  (L.startMonth||"").slice(2,4)+(L.startMonth||"").slice(5,7),
+  (L.phone||"").slice(-6),
+].filter(Boolean).join(" · ");
+
 function todoItems(){
   const out=[];
   for(const L of LINES){
@@ -351,7 +359,7 @@ function todoItems(){
           if((dm.checked||{})[b.key]) continue;
           out.push({kind:"ben", day:+due.slice(8,10), rawDay:due.slice(5).replace("-","/"),
                     L, ym:dm.ym, key:b.key, due, interval:true,
-                    title:b.label, sub:`${L.shortLabel}${b.channel?" · "+b.channel:""}`,
+                    title:`${b.label}(${b.channel||"-"})`, sub:lineSub(L), plan:L.planName,
                     value:dm.values?.[b.key]});
           continue;
         }
@@ -360,7 +368,7 @@ function todoItems(){
         if(day==null) continue;            // 예정일 없는 1회성 혜택은 제외
         if(ck[b.key]) continue;
         out.push({kind:"ben", day, rawDay:b.rawDay, L, ym:TODAY, key:b.key,
-                  title:b.label, sub:`${L.shortLabel}${b.channel?" · "+b.channel:""}`,
+                  title:`${b.label}(${b.channel||"-"})`, sub:lineSub(L), plan:L.planName,
                   value:mo.values?.[b.key]});
       }
     }
@@ -372,9 +380,11 @@ function todoItems(){
       const biz=hint.match(/(\d+)\s*\+\s*(\d+)\s*영업일/);
       const d = biz ? bizDayFrom(TODAY, +biz[1], +biz[2]) : dayHintNum(hint);
       // 납부일 힌트가 없으면 "-". 납부수단은 아래 sub 줄에 이미 나오므로 날짜 칸에 넣지 않는다.
+      // 요금제는 받는 게 아니라 내는 돈이라, 괄호 안은 지급수단이 아니라 납부수단이다
       out.push({kind:"fee", day:d??99, rawDay: biz ? `${d}일` : (hint||"-"),
-                L, ym:pm.ym, key:"fee", title:`요금제 (${pm.ym}분)`,
-                sub:`${L.shortLabel} · ${L.payment?.method||""}${biz?` · ${hint}`:""}`,
+                L, ym:pm.ym, key:"fee",
+                title:`요금제 ${pm.ym}분(${L.payment?.method||"-"})`,
+                sub:lineSub(L) + (biz?` · ${hint}`:""), plan:L.planName,
                 value:pm.fee});
     }
   }
@@ -400,7 +410,8 @@ function renderTodo(){
     const row=el("div","item");
     row.innerHTML=`<div class="day">${it.rawDay||"-"}</div>
       <div class="itemMain"><div class="itemTitle">${it.title}</div>
-        <div class="itemSub">${it.sub}</div></div>
+        <div class="itemSub">${it.sub}</div>
+        <div class="itemPlan">${it.plan||""}</div></div>
       <div class="amt">${it.value==null?"·":won(it.value)}</div>`;
     const btn=el("button",null,"완료");
     btn.onclick=async()=>{
