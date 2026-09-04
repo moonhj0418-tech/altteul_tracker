@@ -225,6 +225,20 @@ const prevYm = (ym) => { const [y,m]=ym.split("-").map(Number);
   return m===1 ? `${y-1}-12` : `${y}-${String(m-1).padStart(2,"0")}`; };
 const monthsApart = (a,b) => { const [ay,am]=a.split("-").map(Number), [by,bm]=b.split("-").map(Number);
   return (by-ay)*12 + (bm-am); };
+/** '9+10영업일' = 그 달 9일로부터 10영업일째 되는 날.
+    시작일이 주말이면 다음 영업일부터 1로 센다.
+    ⚠️ 공휴일은 반영하지 않는다 — 연휴가 낀 달은 실제로 며칠 더 밀릴 수 있다. */
+function bizDayFrom(ym, startDay, n){
+  const [y,m]=ym.split("-").map(Number);
+  const d=new Date(y, m-1, startDay);
+  let c=0;
+  for(let guard=0; guard<200; guard++){
+    const w=d.getDay();
+    if(w!==0 && w!==6){ c++; if(c===n) break; }
+    d.setDate(d.getDate()+1);
+  }
+  return d.getMonth()===m-1 ? d.getDate() : 31;   // 달을 넘기면 월말로 취급
+}
 /** '9~10일' → 9, '20일경' → 20, '월말' → 31 */
 const dayHintNum = (s) => {
   if(!s) return null;
@@ -309,11 +323,15 @@ function todoItems(){
     // 전월 요금제는 이번 달에 지불된다 → 이번 달에 확인 가능
     const pm=L.months.find(m=>m.ym===prevYm(TODAY));
     if(pm && !(pm.checked||{}).fee){
-      const d=dayHintNum(L.payment?.dayHint);
+      const hint=L.payment?.dayHint||"";
+      // 'N+M영업일' 은 이번 달 기준으로 실제 날짜를 계산한다
+      const biz=hint.match(/(\d+)\s*\+\s*(\d+)\s*영업일/);
+      const d = biz ? bizDayFrom(TODAY, +biz[1], +biz[2]) : dayHintNum(hint);
       // 납부일 힌트가 없으면 "-". 납부수단은 아래 sub 줄에 이미 나오므로 날짜 칸에 넣지 않는다.
-      out.push({kind:"fee", day:d??99, rawDay:L.payment?.dayHint||"-",
+      out.push({kind:"fee", day:d??99, rawDay: biz ? `${d}일` : (hint||"-"),
                 L, ym:pm.ym, key:"fee", title:`요금제 (${pm.ym}분)`,
-                sub:`${L.shortLabel} · ${L.payment?.method||""}`, value:pm.fee});
+                sub:`${L.shortLabel} · ${L.payment?.method||""}${biz?` · ${hint}`:""}`,
+                value:pm.fee});
     }
   }
   return out.sort((a,b)=>a.day-b.day || a.L.id.localeCompare(b.L.id));
@@ -351,7 +369,9 @@ function renderTodo(){
   body.append(box);
   body.append(el("p","foot",
     `예정일 순으로 정렬됩니다. 가입 시 1회성 혜택(예정일 <code>-</code>)은 목록에서 제외했습니다. ` +
-    `요금제는 그 달 금액이 다음 달에 지불되므로 <strong>전월분</strong>이 이번 달 할 일로 올라옵니다.`));
+    `요금제는 그 달 금액이 다음 달에 지불되므로 <strong>전월분</strong>이 이번 달 할 일로 올라옵니다. ` +
+    `<code>9+10영업일</code> 같은 영업일 기준 납부일은 이번 달 날짜로 계산해 표시하지만, ` +
+    `<strong>공휴일은 반영하지 않습니다</strong> — 연휴가 낀 달은 실제로 며칠 더 밀릴 수 있습니다.`));
 }
 
 /* ---------- 전체 현황 ---------- */
