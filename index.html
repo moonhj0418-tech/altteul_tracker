@@ -310,7 +310,8 @@ function todoItems(){
     const pm=L.months.find(m=>m.ym===prevYm(TODAY));
     if(pm && !(pm.checked||{}).fee){
       const d=dayHintNum(L.payment?.dayHint);
-      out.push({kind:"fee", day:d??99, rawDay:L.payment?.dayHint||L.payment?.method||"-",
+      // 납부일 힌트가 없으면 "-". 납부수단은 아래 sub 줄에 이미 나오므로 날짜 칸에 넣지 않는다.
+      out.push({kind:"fee", day:d??99, rawDay:L.payment?.dayHint||"-",
                 L, ym:pm.ym, key:"fee", title:`요금제 (${pm.ym}분)`,
                 sub:`${L.shortLabel} · ${L.payment?.method||""}`, value:pm.fee});
     }
