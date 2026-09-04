@@ -239,9 +239,12 @@ function bizDayFrom(ym, startDay, n){
   }
   return d.getMonth()===m-1 ? d.getDate() : 31;   // 달을 넘기면 월말로 취급
 }
-/** '9~10일' → 9, '20일경' → 20, '월말' → 31 */
+/** '9~10일' → 9, '20일경' → 20, '월말' → 31
+    범위 표기는 **시작일**을 쓴다. 범위를 적어둔 이유가 공휴일 때문에 지급이
+    밀릴 수 있어서이므로, "빨라야 이날"이 기준이 되어야 한다. */
 const dayHintNum = (s) => {
   if(!s) return null;
+  const rng = String(s).match(/(\d+)\s*~\s*\d+/); if(rng) return +rng[1];
   const m = String(s).match(/(\d+)\s*일/); if(m) return +m[1];
   if(/월말/.test(s)) return 31; if(/월초/.test(s)) return 1; if(/중순/.test(s)) return 15;
   return null;
@@ -313,9 +316,11 @@ function todoItems(){
     if(mo){
       const ck=mo.checked||{};
       for(const b of L.benefits||[]){
-        if(b.day==null) continue;          // 예정일 없는 1회성 혜택은 제외
+        // rawDay 를 단일 기준으로 삼는다. 저장된 day 는 변환 시점 값이라 규칙이 바뀌면 어긋난다.
+        const day=dayHintNum(b.rawDay);
+        if(day==null) continue;            // 예정일 없는 1회성 혜택은 제외
         if(ck[b.key]) continue;
-        out.push({kind:"ben", day:b.day, rawDay:b.rawDay, L, ym:TODAY, key:b.key,
+        out.push({kind:"ben", day, rawDay:b.rawDay, L, ym:TODAY, key:b.key,
                   title:b.label, sub:`${L.shortLabel}${b.channel?" · "+b.channel:""}`,
                   value:mo.values?.[b.key]});
       }
