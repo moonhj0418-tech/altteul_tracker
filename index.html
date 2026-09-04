@@ -66,6 +66,10 @@
   th:first-child,td:first-child{text-align:left; position:sticky; left:0; background:var(--card)}
   th{color:var(--muted); font-weight:500; font-size:11.5px; text-transform:uppercase;
      letter-spacing:.04em}
+  .thDay{display:block; font-weight:400; font-size:11px; text-transform:none; letter-spacing:0}
+  .thCh{display:inline-block; margin-top:4px; font-weight:500; font-size:10.5px;
+        background:var(--chip); color:var(--ink); border-radius:999px; padding:1px 8px;
+        text-transform:none; letter-spacing:0}
   td{font-variant-numeric:tabular-nums}
   td.cell{cursor:pointer}
   td.cell:hover{background:var(--chip)}
@@ -411,7 +415,8 @@ function renderDetail(L){
      현재 미확인 요금 <strong>${won(m.pendingFee)}원</strong>을 확인완료로 바꾸면 맞아떨어집니다.`));
 
   const head=`<tr><th>년월</th><th>M+</th><th>요금제</th>`+
-    bens.map(b=>`<th>${b.label}<br><span style="font-weight:400">${b.rawDay||"-"}</span></th>`).join("")+
+    bens.map(b=>`<th>${b.label}<span class="thDay">${b.rawDay||"-"}</span>`+
+      (b.channel?`<span class="thCh">${b.channel}</span>`:"")+`</th>`).join("")+
     `<th>실이득</th><th>월평균</th><th>비고</th></tr>`;
   const body=m.rows.map(r=>{
     const past=m.maxAvgM&&r.ym>m.maxAvgM, ck=r.checked||{};
@@ -430,7 +435,8 @@ function renderDetail(L){
 
   const tbl=el("div","card",`<div class="scroll"><table><thead>${head}</thead><tbody>${body}</tbody></table></div>
     <p class="muted" style="margin:12px 0 0">
-      주황 선이 <strong>최대 월평균 시점</strong>입니다. 그 아래(흐린 행)는 유지할수록 월평균이 떨어집니다.
+      헤더는 <strong>혜택명 · 예정일 · <span class="thCh" style="margin:0">지급수단</span></strong> 순입니다.
+      주황 선이 <strong>최대 월평균 시점</strong>이고, 그 아래(흐린 행)는 유지할수록 월평균이 떨어집니다.
       <span class="ck">✓</span>는 확인완료. <strong>금액을 누르면 수정·확인완료</strong>할 수 있습니다.</p>`);
   tbl.querySelectorAll("td.cell").forEach(td=>{
     td.onclick=()=>openEditor(L, td.dataset.ym, td.dataset.key);
