@@ -165,13 +165,12 @@
           <tbody id="verifyBody"></tbody>
         </table></div>
         <h2 style="margin-top:24px">데이터 관리</h2>
-        <div class="row">
-          <button id="btnImport">JSON에서 다시 가져오기</button>
-          <span class="muted" id="importStatus"></span>
-        </div>
-        <div id="overwriteNote" class="note hide">
-          같은 ID를 <strong>덮어씁니다</strong> — 확인완료 표시나 수정한 값이
-          JSON 기준으로 되돌아갑니다. 진행하려면 한 번 더 누르세요.</div>
+        <p class="muted" style="margin-top:-8px">
+          "JSON에서 다시 가져오기" 는 <strong>제거했습니다</strong> (2026-10-05).
+          마이그레이션은 끝났고, 저장소의 <code>data/altteul_lines.json</code> 은 2026-08 스냅샷이라
+          지금 불러오면 그 뒤로 쌓인 확인완료 기록이 전부 되돌아갑니다.
+          신규 회선은 Apps Script <code>Import.gs</code> 로 해당 회선만 넣고,
+          백업은 <code>backupToDrive()</code> 가 매주 Drive 에 저장합니다.</p>
       </div>
     </details>
 
@@ -210,7 +209,7 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-app.js";
 import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged }
   from "https://www.gstatic.com/firebasejs/11.0.2/firebase-auth.js";
-import { getFirestore, collection, doc, getDocs, updateDoc, writeBatch }
+import { getFirestore, collection, doc, getDocs, updateDoc }
   from "https://www.gstatic.com/firebasejs/11.0.2/firebase-firestore.js";
 
 const $  = (id) => document.getElementById(id);
@@ -659,25 +658,14 @@ function renderVerify(){
                          Math.round(m.maxAvg)===e[2]&&m.maxAvgM===e[3]};});
 }
 
-/* ---------- 다시 가져오기 ---------- */
-let armed=false;
-$("btnImport").onclick=async()=>{
-  try{
-    if(!armed){ armed=true; show($("overwriteNote"),true);
-                $("btnImport").textContent="덮어쓰기 진행"; return; }
-    $("btnImport").disabled=true; $("importStatus").textContent="기록 중…";
-    const src=await (await fetch("data/altteul_lines.json",{cache:"no-store"})).json();
-    const batch=writeBatch(db);
-    for(const L of src){ const {months,...meta}=L;
-      batch.set(doc(db,"lines",L.id),meta);
-      for(const m of months) batch.set(doc(db,"lines",L.id,"months",m.ym),m); }
-    await batch.commit();
-    $("importStatus").textContent="완료"; armed=false; show($("overwriteNote"),false);
-    $("btnImport").textContent="JSON에서 다시 가져오기";
-    await boot();
-  }catch(e){ fail(e); $("importStatus").textContent="실패"; }
-  $("btnImport").disabled=false;
-};
+/* ---------- 다시 가져오기 — 제거했다 (2026-10-05) ----------
+   마이그레이션 전용 기능이었고, 그 일은 2026-08-31 에 끝났다.
+   `data/altteul_lines.json` 은 그 시점 스냅샷이라 지금 불러오면 회선 5개를 통째로
+   덮어써서 이후 쌓인 확인완료 기록이 전부 사라진다. 복원이 아니라 되돌리기였다.
+   남겨둘 이유보다 실수로 누를 위험이 커서 뺐다.
+
+   신규 회선은 `알뜰폰트래커/appsscript/Import.gs` 로 해당 회선만 넣는다.
+   백업은 Apps Script `backupToDrive()` 가 매주 Drive 에 저장한다 — 그게 진짜 복구 수단이다. */
 
 /* ---------- 렌더 / 부팅 ---------- */
 function render(){
