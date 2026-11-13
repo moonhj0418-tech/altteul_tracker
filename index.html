@@ -356,6 +356,7 @@ function todoItems(){
           if(!due || due.slice(0,7)>TODAY) continue;   // 아직 예정일이 안 왔다
           const dm=L.months.find(m=>m.ym===due.slice(0,7)) || mo;
           if((dm.checked||{})[b.key]) continue;
+          if(!dm.values?.[b.key]) continue;          // 0원·공란 — 아래 같은 규칙
           out.push({kind:"ben", day:+due.slice(8,10), rawDay:due.slice(5).replace("-","/"),
                     L, ym:dm.ym, key:b.key, due, interval:true,
                     title:`${b.label}(${b.channel||"-"})`, sub:lineSub(L), plan:L.planName,
@@ -366,6 +367,10 @@ function todoItems(){
         const day=dayHintNum(b.rawDay);
         if(day==null) continue;            // 예정일 없는 1회성 혜택은 제외
         if(ck[b.key]) continue;
+        // 0원·공란은 받을 게 없으니 목록에서 뺀다 (2026-11-13). 확인완료로 바꾸지는 않는다 — 지표엔 영향 없음.
+        // 1원(데이터쿠폰·추첨 등 "확인할 게 있다" 표시)과 음수(유심비 등 지출)는 그대로 보인다.
+        // 텔레그램 알림(Code.gs collectLine_)도 같은 규칙이다.
+        if(!mo.values?.[b.key]) continue;
         out.push({kind:"ben", day, rawDay:b.rawDay, L, ym:TODAY, key:b.key,
                   title:`${b.label}(${b.channel||"-"})`, sub:lineSub(L), plan:L.planName,
                   value:mo.values?.[b.key]});
