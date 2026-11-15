@@ -344,12 +344,12 @@ const lineSub = (L) => [
 ].filter(Boolean).join(" · ");
 
 // 피클 = 밀리의 서재 멤버십을 피클(구독 공유)로 현금화하는 것. 회선을 해지하기 전에
-// 피클 방장을 먼저 해지해야 한다 (2026-11-15). 혜택에 "피클"이나 "밀리의"가 들어간 회선이면
-// 통신사와 상관없이 — 새로 가입하는 회선도 자동으로 — 최대 월평균 시점(🟠)부터
+// 피클 방장을 먼저 해지해야 한다 (2026-11-15). 혜택에 "피클"이 들어간 회선이면
+// 통신사와 상관없이 — 새 회선은 혜택 이름을 "피클"로 넣으면 자동으로 — 최대 월평균 시점(🟠)부터
 // 해지할 때까지(🔴 포함) 할 일·경고에 주의 문구를 붙인다. 텔레그램(Code.gs needPickle_)도 같은 규칙.
 const PICKLE_WARN="⚠️ 피클 방장 사전 해지 요망";
 const needPickle=(L)=>
-  (L.benefits||[]).some(b=>/피클|밀리의/.test(JSON.stringify(b))) &&
+  (L.benefits||[]).some(b=>JSON.stringify(b).includes("피클")) &&
   (L._m?.sig==="o"||L._m?.sig==="r");
 
 function todoItems(){
